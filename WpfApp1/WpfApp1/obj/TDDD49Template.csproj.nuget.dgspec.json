@@ -10,14 +10,11 @@
         "projectUniqueName": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
         "projectName": "TDDD49Template",
         "projectPath": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
-        "packagesPath": "C:\\Users\\filkj254\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\rasla833\\.nuget\\packages\\",
         "outputPath": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\filkj254\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\rasla833\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

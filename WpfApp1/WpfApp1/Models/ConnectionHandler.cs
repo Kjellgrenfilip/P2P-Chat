@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Net.Sockets;
 using System.Net;
+using System.Threading;
+
 
 namespace WpfApp1.Models
 {
@@ -26,10 +28,7 @@ namespace WpfApp1.Models
 
         public void requestConnection()
         {
-            byte[] ip = new byte[4];
-            ip[0] = 127;
-            ip[1] = byte.MinValue;
-            ip[3] = 1;
+            byte[] ip = new byte[4] { 127, 0, 0, 1 };
 
             IPAddress address = new IPAddress(ip);
             IPEndPoint endPoint = new IPEndPoint(address, 8041);
@@ -38,15 +37,14 @@ namespace WpfApp1.Models
 
         public void listen()
         {
-            byte[] ip = new byte[4];
-            ip[0] = 127;
-            ip[1] = byte.MinValue;
-            ip[3] = 1;
+            byte[] ip = new byte[4] { 127, 0, 0, 1 };
 
             IPAddress address = new IPAddress(ip);
             IPEndPoint endPoint = new IPEndPoint(address, 8041);
             listeningSocket.Bind(endPoint);
             listeningSocket.Listen(100);
+
+
 
 
         }
@@ -66,8 +64,24 @@ namespace WpfApp1.Models
             else if(message == "accept")
             {
                 Socket socket = listeningSocket.Accept();
-                MessageBox.Show("");
+                byte[] buffer = new byte[1024];
+                socket.Receive(buffer);
+                MessageBox.Show(Encoding.Default.GetString(buffer));
             }
+            else if (message == "send")
+            {
+                sendByte();
+            }
+            else if (message == "recieve")
+            {
+                requestConnection();
+            }
+        }
+    
+        public void sendByte()
+        {
+            byte[] msg = Encoding.Default.GetBytes("Make Love, not WAR");
+            sendSocket.Send(msg);
         }
     }
 }

@@ -6,18 +6,21 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid Height="50" Margin="0,0">
+    <Grid Height="400" Margin="10,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        
-        <TextBox Text="{Binding Path=MessageToSend}"></TextBox>
-        <Button Grid.Row="1" Grid.Column="2" Command="{Binding PushCommand}" >Send Message!</Button>
+
+        <TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=MessageToSend}" Grid.ColumnSpan="1"></TextBox>
+        <Button Grid.Row="3" Grid.Column="1" Command="{Binding PushCommand}" Grid.ColumnSpan="1" >Send Message!</Button>
 
     </Grid>
 </Window>
