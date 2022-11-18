@@ -17,11 +17,13 @@ namespace WpfApp1.ViewModels
 
         public void OnPropertyChanged([CallerMemberName()] string name = null)
         {
-            if (name != null) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+           PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private ConnectionHandler _connection;
         private String _messageToSend;
+        private String _userName;
+        private String _listenPort;
         private ICommand _pushCommand;
         private ICommand _listen;
         private String _listenOK ="NOT TODAY";
@@ -42,10 +44,23 @@ namespace WpfApp1.ViewModels
             set { _messageToSend = value; }
         }
 
+        public String UserName
+        {
+            get { return _userName; }
+            set { _userName = value; }
+        }
+        public String ListenPort
+        {
+            get { return _listenPort; }
+            set { _listenPort = value; }
+        }
+
         public String ListenOK
         {
             get { return _listenOK; }
-            set { _listenOK = value; }
+            set { _listenOK = value;
+                OnPropertyChanged();
+            }
         }
 
         public ICommand PushCommand
@@ -72,9 +87,9 @@ namespace WpfApp1.ViewModels
         public void listen()
         {
             
-            if (Connection.listen())
+            if (Connection.listen(ListenPort))
             {
-                ListenOK = "NICE WORK MAN";
+                ListenOK = "Listening on PORT: " + ListenPort;
             }
                 
             else

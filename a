@@ -1,0 +1,246 @@
+[1mdiff --cc WpfApp1/.vs/TDDD49Template/v16/.suo[m
+[1mindex 3ba1bcc,c3aafc8..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/Views/MainWindow.xaml[m
+[1mindex d5c0213,7432572..0000000[m
+[1m--- a/WpfApp1/WpfApp1/Views/MainWindow.xaml[m
+[1m+++ b/WpfApp1/WpfApp1/Views/MainWindow.xaml[m
+[36m@@@ -5,12 -5,11 +5,20 @@@[m
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"[m
+          xmlns:local="clr-namespace:WpfApp1"[m
+          mc:Ignorable="d"[m
+[32m++<<<<<<< HEAD[m
+[32m +        Title="CHAT" Height="450" Width="800" >[m
+[32m +    <Grid Height="auto" Margin="0" Background="MediumSeaGreen">[m
+[32m +[m
+[32m +        <Grid.ColumnDefinitions>[m
+[32m +            <ColumnDefinition Width="1*"></ColumnDefinition>[m
+[32m +            <ColumnDefinition Width="2*"></ColumnDefinition>[m
+[32m++=======[m
+[32m+         Title="MainWindow" Height="450" Width="800">[m
+[32m+     <Grid Height="400" Margin="10,0">[m
+[32m+         <Grid.ColumnDefinitions>[m
+[32m+             <ColumnDefinition Width="1*"></ColumnDefinition>[m
+[32m+             <ColumnDefinition Width="3*"></ColumnDefinition>[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+          </Grid.ColumnDefinitions>[m
+          <Grid.RowDefinitions>[m
+              <RowDefinition Height="1*"></RowDefinition>[m
+[36m@@@ -17,62 -19,8 +28,67 @@@[m
+          </Grid.RowDefinitions>[m
+  [m
+  [m
+[32m++<<<<<<< HEAD[m
+[32m +[m
+[32m +[m
+[32m +        <!-- Vänster grid, konfiguration-->[m
+[32m +        <Grid Grid.Column="0" Grid.ColumnSpan="1" Margin="0,0,0,0" Grid.RowSpan="1" Background="orange">[m
+[32m +[m
+[32m +            <Grid.ColumnDefinitions>[m
+[32m +                <ColumnDefinition Width="1*"></ColumnDefinition>[m
+[32m +                <ColumnDefinition Width="1*"></ColumnDefinition>[m
+[32m +            </Grid.ColumnDefinitions>[m
+[32m +            <Grid.RowDefinitions>[m
+[32m +                <RowDefinition Height="1*"></RowDefinition>[m
+[32m +                <RowDefinition Height="1*"></RowDefinition>[m
+[32m +                <RowDefinition Height="5*"></RowDefinition>[m
+[32m +                <RowDefinition Height="1*"></RowDefinition>[m
+[32m +                <RowDefinition Height="1*"></RowDefinition>[m
+[32m +                <RowDefinition Height="5*"></RowDefinition>[m
+[32m +            </Grid.RowDefinitions>[m
+[32m +[m
+[32m +            <TextBox  Grid.Column="1" Grid.Row="0"  Grid.RowSpan="1" Margin= "4"/>[m
+[32m +            <Label Content="NAME: " Margin="50,0,0,0"></Label>[m
+[32m +            <Label Content="PORT TO LISTEN: " Grid.Row="1" Margin="50,0,0,0"></Label>[m
+[32m +            <TextBox  Grid.Column="1" Grid.Row="1" Grid.RowSpan="1" Margin= "4"/>[m
+[32m +[m
+[32m +            <Button Command="{Binding Listen}" Grid.Column="0"  Grid.Row="2" Margin="10,40,10,40" >LISTEN</Button>[m
+[32m +            <TextBox Text="{Binding ListenOK, Mode = TwoWay}" Grid.Row="2" Grid.Column="1" Margin="10,40,10,40"></TextBox>[m
+[32m +            <!-- TROR INTE STATUSBAR ÄR RÄTT-->[m
+[32m +[m
+[32m +            <TextBox Text="" Grid.Column="1" Grid.Row="3"  Grid.RowSpan="1" Margin= "4"/>[m
+[32m +            <Label Content="PORT: " Grid.Column="0" Grid.Row="3" Margin="50,0,0,0"></Label>[m
+[32m +            <Label Content="IP TO CONNECT: " Grid.Column="0" Grid.Row="4" Margin="30,0,0,0"></Label>[m
+[32m +            <TextBox Text="" Grid.Column="1" Grid.Row="4" Grid.RowSpan="1" Margin= "4"/>[m
+[32m +[m
+[32m +            <Button Grid.Column="0"  Grid.Row="5" Margin="10,40,10,40" >Establish Connection</Button>[m
+[32m +            <StatusBar Grid.Row="5" Grid.Column="1" Margin="10,40,10,40"></StatusBar>[m
+[32m +[m
+[32m +[m
+[32m +            <!-- TROR INTE STATUSBAR ÄR RÄTT-->[m
+[32m +[m
+[32m +        </Grid>[m
+[32m +[m
+[32m +        <!-- Höger grid, chattfönster-->[m
+[32m +        <Grid Grid.Column="1" Grid.ColumnSpan="1" Grid.RowSpan="1">[m
+[32m +            <Grid.ColumnDefinitions>[m
+[32m +                <ColumnDefinition Width="1*"></ColumnDefinition>[m
+[32m +                <ColumnDefinition Width="1*"></ColumnDefinition>[m
+[32m +            </Grid.ColumnDefinitions>[m
+[32m +            <Grid.RowDefinitions>[m
+[32m +                <RowDefinition Height="7*"></RowDefinition>[m
+[32m +                <RowDefinition Height="1*"></RowDefinition>[m
+[32m +            </Grid.RowDefinitions>[m
+[32m +[m
+[32m +            <TextBox Text="{Binding Path=MessageToSend}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1"></TextBox>[m
+[32m +            <Button  Command="{Binding PushCommand}" Grid.Column="1" Grid.Row="1" >Send Message!</Button>[m
+[32m +        </Grid>[m
+[32m +[m
+[32m++=======[m
+[32m+         <TextBox Grid.Row="3" Grid.Column="0" Text="{Binding Path=MessageToSend}" Grid.ColumnSpan="1"></TextBox>[m
+[32m+         <Button Grid.Row="3" Grid.Column="1" Command="{Binding PushCommand}" Grid.ColumnSpan="1" >Send Message!</Button>[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+  [m
+      </Grid>[m
+[32m +[m
+  </Window>[m
+[1mdiff --cc WpfApp1/WpfApp1/bin/Debug/net5.0-windows/TDDD49Template.dll[m
+[1mindex 5283c12,f9013b0..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/bin/Debug/net5.0-windows/TDDD49Template.pdb[m
+[1mindex 932b7a2,20301bf..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/bin/Debug/net5.0-windows/TDDD49Template.runtimeconfig.dev.json[m
+[1mindex 46b6584,856ffcf..0000000[m
+[1m--- a/WpfApp1/WpfApp1/bin/Debug/net5.0-windows/TDDD49Template.runtimeconfig.dev.json[m
+[1m+++ b/WpfApp1/WpfApp1/bin/Debug/net5.0-windows/TDDD49Template.runtimeconfig.dev.json[m
+[36m@@@ -1,8 -1,8 +1,13 @@@[m
+  {[m
+    "runtimeOptions": {[m
+      "additionalProbingPaths": [[m
+[32m++<<<<<<< HEAD[m
+[32m +      "C:\\Users\\filkj254\\.dotnet\\store\\|arch|\\|tfm|",[m
+[32m +      "C:\\Users\\filkj254\\.nuget\\packages"[m
+[32m++=======[m
+[32m+       "C:\\Users\\rasla833\\.dotnet\\store\\|arch|\\|tfm|",[m
+[32m+       "C:\\Users\\rasla833\\.nuget\\packages"[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+      ][m
+    }[m
+  }[m
+[1mdiff --cc WpfApp1/WpfApp1/bin/Debug/net5.0-windows/ref/TDDD49Template.dll[m
+[1mindex ac23d9f,64d8fe5..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.assets.cache[m
+[1mindex 88aeeac,76ac434..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.designer.runtimeconfig.json[m
+[1mindex c03046a,a2c8420..0000000[m
+[1m--- a/WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.designer.runtimeconfig.json[m
+[1m+++ b/WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.designer.runtimeconfig.json[m
+[36m@@@ -6,8 -6,8 +6,13 @@@[m
+        "version": "5.0.0"[m
+      },[m
+      "additionalProbingPaths": [[m
+[32m++<<<<<<< HEAD[m
+[32m +      "C:\\Users\\filkj254\\.dotnet\\store\\|arch|\\|tfm|",[m
+[32m +      "C:\\Users\\filkj254\\.nuget\\packages"[m
+[32m++=======[m
+[32m+       "C:\\Users\\rasla833\\.dotnet\\store\\|arch|\\|tfm|",[m
+[32m+       "C:\\Users\\rasla833\\.nuget\\packages"[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+      ],[m
+      "configProperties": {[m
+        "Microsoft.NETCore.DotNetHostPolicy.SetAppPaths": true[m
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.dll[m
+[1mindex 5283c12,f9013b0..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.g.resources[m
+[1mindex 99f7826,580edc0..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/TDDD49Template.pdb[m
+[1mindex 932b7a2,20301bf..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.baml[m
+[1mindex 32de20d,9eabbe5..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.g.cs[m
+[1mindex 7d8c8b3,235967d..0000000[m
+[1m--- a/WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.g.cs[m
+[1m+++ b/WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.g.cs[m
+[36m@@@ -1,4 -1,4 +1,8 @@@[m
+[32m++<<<<<<< HEAD[m
+[32m +﻿#pragma checksum "..\..\..\..\Views\MainWindow.xaml" "{ff1816ec-aa5e-4d10-87f7-6f4963833460}" "027B4C618D1971B6B0E8905732DE82156AF4A003"[m
+[32m++=======[m
+[32m+ ﻿#pragma checksum "..\..\..\..\Views\MainWindow.xaml" "{ff1816ec-aa5e-4d10-87f7-6f4963833460}" "5CF411CDC306D39792EFEDC003F797DA8A427A79"[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+  //------------------------------------------------------------------------------[m
+  // <auto-generated>[m
+  //     This code was generated by a tool.[m
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.g.i.cs[m
+[1mindex 7d8c8b3,235967d..0000000[m
+[1m--- a/WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.g.i.cs[m
+[1m+++ b/WpfApp1/WpfApp1/obj/Debug/net5.0-windows/Views/MainWindow.g.i.cs[m
+[36m@@@ -1,4 -1,4 +1,8 @@@[m
+[32m++<<<<<<< HEAD[m
+[32m +﻿#pragma checksum "..\..\..\..\Views\MainWindow.xaml" "{ff1816ec-aa5e-4d10-87f7-6f4963833460}" "027B4C618D1971B6B0E8905732DE82156AF4A003"[m
+[32m++=======[m
+[32m+ ﻿#pragma checksum "..\..\..\..\Views\MainWindow.xaml" "{ff1816ec-aa5e-4d10-87f7-6f4963833460}" "5CF411CDC306D39792EFEDC003F797DA8A427A79"[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+  //------------------------------------------------------------------------------[m
+  // <auto-generated>[m
+  //     This code was generated by a tool.[m
+[1mdiff --cc WpfApp1/WpfApp1/obj/Debug/net5.0-windows/ref/TDDD49Template.dll[m
+[1mindex ac23d9f,64d8fe5..0000000[m
+Binary files differ
+[1mdiff --cc WpfApp1/WpfApp1/obj/TDDD49Template.csproj.nuget.g.props[m
+[1mindex ac2369d,f88afdc..0000000[m
+[1m--- a/WpfApp1/WpfApp1/obj/TDDD49Template.csproj.nuget.g.props[m
+[1m+++ b/WpfApp1/WpfApp1/obj/TDDD49Template.csproj.nuget.g.props[m
+[36m@@@ -5,12 -5,12 +5,20 @@@[m
+      <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>[m
+      <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>[m
+      <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>[m
+[32m++<<<<<<< HEAD[m
+[32m +    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\filkj254\.nuget\packages\</NuGetPackageFolders>[m
+[32m++=======[m
+[32m+     <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\rasla833\.nuget\packages\</NuGetPackageFolders>[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+      <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>[m
+[31m -    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.11.1</NuGetToolVersion>[m
+[32m +    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.11.2</NuGetToolVersion>[m
+    </PropertyGroup>[m
+    <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">[m
+[32m++<<<<<<< HEAD[m
+[32m +    <SourceRoot Include="C:\Users\filkj254\.nuget\packages\" />[m
+[32m++=======[m
+[32m+     <SourceRoot Include="C:\Users\rasla833\.nuget\packages\" />[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+    </ItemGroup>[m
+    <PropertyGroup>[m
+      <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>[m
+[1mdiff --cc WpfApp1/WpfApp1/obj/project.assets.json[m
+[1mindex 0fa72e7,50270e9..0000000[m
+[1m--- a/WpfApp1/WpfApp1/obj/project.assets.json[m
+[1m+++ b/WpfApp1/WpfApp1/obj/project.assets.json[m
+[36m@@@ -8,7 -8,7 +8,11 @@@[m
+      "net5.0-windows7.0": [][m
+    },[m
+    "packageFolders": {[m
+[32m++<<<<<<< HEAD[m
+[32m +    "C:\\Users\\filkj254\\.nuget\\packages\\": {}[m
+[32m++=======[m
+[32m+     "C:\\Users\\rasla833\\.nuget\\packages\\": {}[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+    },[m
+    "project": {[m
+      "version": "1.0.0",[m
+[1mdiff --cc WpfApp1/WpfApp1/obj/project.nuget.cache[m
+[1mindex a284a10,e356957..0000000[m
+[1m--- a/WpfApp1/WpfApp1/obj/project.nuget.cache[m
+[1m+++ b/WpfApp1/WpfApp1/obj/project.nuget.cache[m
+[36m@@@ -1,6 -1,6 +1,10 @@@[m
+  {[m
+    "version": 2,[m
+[32m++<<<<<<< HEAD[m
+[32m +  "dgSpecHash": "BtEWdRz/0hqYVVGquiPVUSlbrpBmzUeAZPlVgoLYYkbOa5EomEiOFQ1095ilVX3lElMObm2dlSviOf1KCSY0pA==",[m
+[32m++=======[m
+[32m+   "dgSpecHash": "CGPz7nGeVnya0DZs39ImpM0rrZ6RZe0Fo8hY0ohvQbjAcVv7+oNuYbV6lWAcbYPHuvwqpGRmqksEEwtp3VxC5w==",[m
+[32m++>>>>>>> 1aaf4f9ab7844e08d32678f2cbaa448e782396e2[m
+    "success": true,[m
+    "projectFilePath": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",[m
+    "expectedPackageFiles": [],[m
+[1mdiff --git a/.vs/slnx.sqlite b/.vs/slnx.sqlite[m
+[1mindex 86e9375..2d6e962 100644[m
+Binary files a/.vs/slnx.sqlite and b/.vs/slnx.sqlite differ
+* Unmerged path WpfApp1/WpfApp1/obj/Release/net5.0-windows/TDDD49Template_MarkupCompile.lref

@@ -36,18 +36,17 @@ namespace WpfApp1.Models
             sendSocket.Connect(endPoint);
         }
 
-        public bool listen()
+        public bool listen(String port)
         {
-            byte[] ip = new byte[4];
-            ip[0] = 127;
-            ip[1] = byte.MinValue;
-            ip[3] = 1;
+             
+            byte[] ip = new byte[4]{127,0,0,1 };
+            
+            int tmp_p = Int32.Parse(port);
 
             IPAddress address = new IPAddress(ip);
-            IPEndPoint endPoint = new IPEndPoint(address, 8041);
+            IPEndPoint endPoint = new IPEndPoint(address, tmp_p);
             listeningSocket.Bind(endPoint);
             listeningSocket.Listen(100);
-            MessageBox.Show("FUCK");
             return true;
         }
 
@@ -55,19 +54,7 @@ namespace WpfApp1.Models
         {
             // Here is the code which sends the data over the network.
             // No user interaction shall exist in the model.
-            if(message == "listen")
-            {
-                listen();
-            }
-            else if(message == "connect")
-            {
-                requestConnection();
-            }
-            else if(message == "accept")
-            {
-                Socket socket = listeningSocket.Accept();
-                MessageBox.Show("");
-            }
+          
         }
        
     }
