@@ -36,7 +36,7 @@ namespace WpfApp1.Models
             sendSocket.Connect(endPoint);
         }
 
-        public void listen()
+        public bool listen()
         {
             byte[] ip = new byte[4];
             ip[0] = 127;
@@ -47,8 +47,8 @@ namespace WpfApp1.Models
             IPEndPoint endPoint = new IPEndPoint(address, 8041);
             listeningSocket.Bind(endPoint);
             listeningSocket.Listen(100);
-
-
+            MessageBox.Show("FUCK");
+            return true;
         }
 
         public void sendMessage(String message)
@@ -69,5 +69,6 @@ namespace WpfApp1.Models
                 MessageBox.Show("");
             }
         }
+       
     }
 }
