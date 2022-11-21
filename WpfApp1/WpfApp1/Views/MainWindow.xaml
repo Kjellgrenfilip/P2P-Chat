@@ -44,13 +44,13 @@
             <TextBox Text="{Binding ListenOK}"  Grid.Row="2" Grid.Column="1" Margin="10,40,10,40"></TextBox>
             <!-- TROR INTE STATUSBAR ÄR RÄTT-->
 
-            <TextBox Text="" Grid.Column="1" Grid.Row="3"  Grid.RowSpan="1" Margin= "4"/>
+            <TextBox Text="{Binding Path=ConnectPort}" Grid.Column="1" Grid.Row="3"  Grid.RowSpan="1" Margin= "4"/>
             <Label Content="PORT: " Grid.Column="0" Grid.Row="3" Margin="50,0,0,0"></Label>
             <Label Content="IP TO CONNECT: " Grid.Column="0" Grid.Row="4" Margin="30,0,0,0"></Label>
-            <TextBox Text="" Grid.Column="1" Grid.Row="4" Grid.RowSpan="1" Margin= "4"/>
+            <TextBox Text="{Binding Path=ConnectIP}" Grid.Column="1" Grid.Row="4" Grid.RowSpan="1" Margin= "4"/>
 
-            <Button Grid.Column="0"  Grid.Row="5" Margin="10,40,10,40" >Establish Connection</Button>
-            <StatusBar Grid.Row="5" Grid.Column="1" Margin="10,40,10,40"></StatusBar>
+            <Button Command="{Binding ConnectCommand}"  Grid.Column="0"  Grid.Row="5" Margin="10,40,10,40" >Establish Connection</Button>
+            <TextBox Text="{Binding RequestOK}" Grid.Row="5" Grid.Column="1" Margin="10,40,10,40"></TextBox>
 
 
             <!-- TROR INTE STATUSBAR ÄR RÄTT-->

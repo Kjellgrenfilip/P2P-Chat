@@ -24,10 +24,15 @@ namespace WpfApp1.ViewModels
         private String _messageToSend;
         private String _userName;
         private String _listenPort;
+        private String _connectPort;
+        private String _connectIP;
+                
+        private ICommand _connectCommand;
+
         private ICommand _pushCommand;
         private ICommand _listen;
         private String _listenOK ="NOT TODAY";
-
+        private String _requestOK = "NOT TODAY";
         public ConnectionHandler Connection
         {
             get { return _connection; }
@@ -55,10 +60,30 @@ namespace WpfApp1.ViewModels
             set { _listenPort = value; }
         }
 
+        public String ConnectPort
+        {
+            get { return _connectPort; }
+            set { _connectPort = value; }
+        }
+        public String ConnectIP
+        {
+            get { return _connectIP; }
+            set { _connectIP = value; }
+        }
+
         public String ListenOK
         {
             get { return _listenOK; }
             set { _listenOK = value;
+                OnPropertyChanged();
+            }
+        }
+        public String RequestOK
+        {
+            get { return _requestOK; }
+            set
+            {
+                _requestOK = value;
                 OnPropertyChanged();
             }
         }
@@ -73,12 +98,17 @@ namespace WpfApp1.ViewModels
             get { return _listen; }
             set { _listen = value; }
         }
-
+        public ICommand ConnectCommand
+        {
+            get { return _connectCommand; }
+            set { _connectCommand = value; }
+        }
         public MainViewModel(ConnectionHandler connectionHandler)
         {
             this.Connection = connectionHandler;
             this.PushCommand = new SendMessageCommand(this);
             this.Listen = new StartListeningCommand(this);
+            this.ConnectCommand = new RequestConnectionCommand(this);
         }
         public void sendMessage()
         {
@@ -87,15 +117,39 @@ namespace WpfApp1.ViewModels
         public void listen()
         {
             
-            if (Connection.listen(ListenPort))
+            if (Connection.listen(ListenPort, new AsyncCallback(onAcceptResult)))
             {
                 ListenOK = "Listening on PORT: " + ListenPort;
+                
             }
                 
             else
                 ListenOK = "NOT NICE WORK MAN";
 
         }
+
+        public void requestConnection()
+        {
+            RequestOK = "sending";
+            Connection.requestConnection(ConnectIP, ConnectPort, new AsyncCallback(onRequestResult));
+
+        }
+
         
+        public void onRequestResult(IAsyncResult result)
+        {
+           if((bool)result.AsyncState)
+                RequestOK = "Success!";
+           else
+                RequestOK = "Not Success!";
+        }
+        public void onAcceptResult(IAsyncResult result)
+        {
+            if ((bool)result.AsyncState)
+                RequestOK = "Accept Success!";
+            else
+                RequestOK = "Not accept Success!";
+        }
+
     }
 }
