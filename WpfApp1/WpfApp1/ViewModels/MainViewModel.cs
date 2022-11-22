@@ -8,12 +8,16 @@ using WpfApp1.Models;
 using WpfApp1.ViewModels.Commands;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+using System.Windows.Interop;
 
 namespace WpfApp1.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public ObservableCollection<MessageTest> _testList = new ObservableCollection<MessageTest>();
+        
 
         public void OnPropertyChanged([CallerMemberName()] string name = null)
         {
@@ -33,6 +37,7 @@ namespace WpfApp1.ViewModels
         private ICommand _listen;
         private String _listenOK ="NOT TODAY";
         private String _requestOK = "NOT TODAY";
+
         public ConnectionHandler Connection
         {
             get { return _connection; }
@@ -42,6 +47,8 @@ namespace WpfApp1.ViewModels
             }
 
         }
+
+        public ObservableCollection<MessageTest> TestList { get { return _testList; } set { _testList = value; } }
 
         public String MessageToSend
         {
@@ -109,9 +116,31 @@ namespace WpfApp1.ViewModels
             this.PushCommand = new SendMessageCommand(this);
             this.Listen = new StartListeningCommand(this);
             this.ConnectCommand = new RequestConnectionCommand(this);
+
+            TestList.Add(new MessageTest()
+            {
+                msg = "TEST!",
+                sender = "ARNE"
+            });
+            TestList.Add(new MessageTest()
+            {
+                msg = "TEST",
+                sender = "ARNE"
+            });
+            TestList.Add(new MessageTest()
+            {
+                msg = "testigaijg",
+                sender = "ARNE"
+            });
+
         }
         public void sendMessage()
         {
+            TestList.Add(new MessageTest()
+            {
+                msg = MessageToSend,
+                sender = "ARNE"
+            });
             Connection.sendMessage(MessageToSend);
         }
         public void listen()
@@ -151,5 +180,11 @@ namespace WpfApp1.ViewModels
                 RequestOK = "Not accept Success!";
         }
 
+    }
+
+    public class MessageTest
+    {
+        public String msg { get; set; }
+        public String sender { get; set; }
     }
 }
