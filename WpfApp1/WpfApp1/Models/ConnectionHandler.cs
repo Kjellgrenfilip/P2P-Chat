@@ -28,21 +28,30 @@ namespace WpfApp1.Models
             SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public void requestConnection(String _ip, String port, AsyncCallback tmpCB)
+        public void requestConnection(String _ip, String port, String lPort, String username, AsyncCallback tmpCB)
         {
             byte[] ip = new byte[4] { 127, 0, 0, 1 };
             
             IPAddress address = new IPAddress(ip);
             IPEndPoint endPoint = new IPEndPoint(address, Int32.Parse(port));
+
             
-            sendSocket.BeginConnect(endPoint, new AsyncCallback(shitCallback), sendSocket.Connected);
-            //Start task
-            //
+            try
+            {
+                sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), lPort);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
         }
 
-        public void shitCallback(IAsyncResult result)
+
+
+        public void onRequestSent(IAsyncResult result)
         {
-            byte[] msg = new byte[5] {72,73,74,75,76 };
+            byte[] msg = Encoding.ASCII.GetBytes((String)result.AsyncState);
             sendSocket.Send(msg);
         }
 
@@ -57,23 +66,50 @@ namespace WpfApp1.Models
             IPEndPoint endPoint = new IPEndPoint(address, tmp_p);
             listeningSocket.Bind(endPoint);
             listeningSocket.Listen(100);
-            listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
+            try
+            {
+                listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+                
             return true;
         }
 
         public void onAccept(IAsyncResult result)
         {
             byte[] buffer = new byte[1024];
-            //connectionSocket = listeningSocket.EndAccept(result);
-            //connectionSocket.Receive(buffer);
-            listeningSocket.Receive(buffer);
-            MessageBox.Show(System.Text.Encoding.Default.GetString(buffer));
-        }
+            connectionSocket = listeningSocket.EndAccept(result);
+
+            //Om vår sendSocket inte är ansluten: Ta emot portnummer och anslut
+            if(!sendSocket.Connected)
+            {
+                connectionSocket.Receive(buffer);
+                
+
+                int tmp_p = Int32.Parse(System.Text.Encoding.Default.GetString(buffer));
+
+                byte[] ip = new byte[4] { 127, 0, 0, 1 };
+                IPAddress address = new IPAddress(ip);
+                IPEndPoint endPoint = new IPEndPoint(address, tmp_p);
+                sendSocket.Connect(endPoint);
+            }
+            while (true)
+            {
+                connectionSocket.Receive(buffer);
+                //listeningSocket.Receive(buffer);
+                MessageBox.Show(System.Text.Encoding.Default.GetString(buffer));
+            }
+            }
 
         public void sendMessage(String message)
         {
             // Here is the code which sends the data over the network.
             // No user interaction shall exist in the model.
+            byte[] buf = Encoding.ASCII.GetBytes(message);
+            sendSocket.Send(buf);
           
         }
 

@@ -131,7 +131,7 @@ namespace WpfApp1.ViewModels
         public void requestConnection()
         {
             RequestOK = "sending";
-            Connection.requestConnection(ConnectIP, ConnectPort, new AsyncCallback(onRequestResult));
+            Connection.requestConnection(ConnectIP, ConnectPort, ListenPort, UserName, new AsyncCallback(onRequestResult));
 
         }
 
