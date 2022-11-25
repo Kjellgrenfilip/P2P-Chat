@@ -73,7 +73,7 @@
             <TextBox Text="{Binding Path=MessageToSend}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1"></TextBox>
             <Button  Command="{Binding PushCommand}" Grid.Column="1" Grid.Row="1" >Send Message!</Button>
             
-            <ListView x:Name="lstNames" ItemsSource="{Binding testList}" Margin="5,5,5,5" Grid.Column="0" Grid.Row="0">
+            <ListView x:Name="lstNames" ItemsSource="{Binding TestList}" Margin="5,5,5,5" Grid.Column="0" Grid.Row="0">
                 <ListView.View>
                     <GridView x:Name="grdNames">
                         <GridViewColumn Header="Messages"  DisplayMemberBinding="{Binding msg}"/>

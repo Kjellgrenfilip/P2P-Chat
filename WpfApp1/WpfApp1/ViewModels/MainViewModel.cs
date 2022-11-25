@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using WpfApp1.Models;
 using WpfApp1.ViewModels.Commands;
@@ -48,7 +49,11 @@ namespace WpfApp1.ViewModels
 
         }
 
-        public ObservableCollection<MessageTest> TestList { get { return _testList; } set { _testList = value; } }
+        public ObservableCollection<MessageTest> TestList
+        { 
+            get { return _testList; }
+            set { _testList = value; } 
+        }
 
         public String MessageToSend
         {
@@ -113,40 +118,21 @@ namespace WpfApp1.ViewModels
         public MainViewModel(ConnectionHandler connectionHandler)
         {
             this.Connection = connectionHandler;
+            Connection.PropertyChanged += EventFromModel;
             this.PushCommand = new SendMessageCommand(this);
             this.Listen = new StartListeningCommand(this);
             this.ConnectCommand = new RequestConnectionCommand(this);
 
-            TestList.Add(new MessageTest()
-            {
-                msg = "TEST!",
-                sender = "ARNE"
-            });
-            TestList.Add(new MessageTest()
-            {
-                msg = "TEST",
-                sender = "ARNE"
-            });
-            TestList.Add(new MessageTest()
-            {
-                msg = "testigaijg",
-                sender = "ARNE"
-            });
 
         }
         public void sendMessage()
         {
-            TestList.Add(new MessageTest()
-            {
-                msg = MessageToSend,
-                sender = "ARNE"
-            });
             Connection.sendMessage(MessageToSend);
         }
         public void listen()
         {
             
-            if (Connection.listen(ListenPort, new AsyncCallback(onAcceptResult)))
+            if (Connection.listen(ListenPort))
             {
                 ListenOK = "Listening on PORT: " + ListenPort;
                 
@@ -160,26 +146,31 @@ namespace WpfApp1.ViewModels
         public void requestConnection()
         {
             RequestOK = "sending";
-            Connection.requestConnection(ConnectIP, ConnectPort, ListenPort, UserName, new AsyncCallback(onRequestResult));
+            Connection.requestConnection(ConnectIP, ConnectPort, ListenPort, UserName);
 
         }
 
-        
-        public void onRequestResult(IAsyncResult result)
+        public void EventFromModel(object? sender, PropertyChangedEventArgs e)
         {
-           if((bool)result.AsyncState)
-                RequestOK = "Success!";
-           else
-                RequestOK = "Not Success!";
+            if (e.PropertyName == "MessageRecieved")
+            {
+                TestList.Add(new MessageTest()
+                {
+                    msg = Connection.MessageRecieved,
+                    sender = ""
+                });
+            }
+            if (e.PropertyName == "Connected")
+            {
+                if(Connection.Connected)
+                { RequestOK = "Connected"; }
+                else
+                {
+                    MessageBox.Show("Could not connect to "+ConnectIP+":"+ConnectPort);
+                    RequestOK = "Connection failed";
+                }
+            }
         }
-        public void onAcceptResult(IAsyncResult result)
-        {
-            if ((bool)result.AsyncState)
-                RequestOK = "Accept Success!";
-            else
-                RequestOK = "Not accept Success!";
-        }
-
     }
 
     public class MessageTest
