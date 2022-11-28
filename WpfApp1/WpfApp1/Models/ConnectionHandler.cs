@@ -193,13 +193,14 @@ namespace WpfApp1.Models
                 ConnectionAccepted = true;
 
             }
-            /*
+            
             while (true)
             {
+                buffer = new byte[buffer.Length];
                 connectionSocket.Receive(buffer);
              
                 MessageRecieved = System.Text.Encoding.Default.GetString(buffer);
-            } */
+            } 
             }
 
         public void sendResponse(bool answer)
@@ -225,7 +226,6 @@ namespace WpfApp1.Models
             // No user interaction shall exist in the model.
             byte[] buf = Encoding.ASCII.GetBytes(message);
             sendSocket.Send(buf);
-          
         }
 
         

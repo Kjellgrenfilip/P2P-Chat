@@ -72,15 +72,36 @@
 
             <TextBox Text="{Binding Path=MessageToSend}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="1"></TextBox>
             <Button  Command="{Binding PushCommand}" Grid.Column="1" Grid.Row="1" >Send Message!</Button>
-            
-            <ListView x:Name="lstNames" ItemsSource="{Binding TestList}" Margin="5,5,5,5" Grid.Column="0" Grid.Row="0">
-                <ListView.View>
-                    <GridView x:Name="grdNames">
+
+
+            <ItemsControl ItemsSource="{Binding TestList}" Grid.Row="0" Grid.Column="0">
+                <ItemsControl.ItemTemplate> <!-- Gör en template för varje inkommande row/meddelande-->
+                    <DataTemplate>
+                        <Border BorderBrush="Black" Margin="10" Padding="10" BorderThickness="2">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding sender}"></TextBlock>
+                                <TextBlock Text="{Binding date}"></TextBlock>
+                                <TextBlock Text="{Binding msg}"></TextBlock>
+                               
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- <ListView x:Name="lstNames" ItemsSource="{Binding TestList}" Margin="5,5,5,5" Grid.Column="0" Grid.Row="0">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="10"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                  <ListView.View>
+                   <GridView x:Name="grdNames">
                         <GridViewColumn Header="Messages"  DisplayMemberBinding="{Binding msg}"/>
                         <GridViewColumn Header="Sender"  DisplayMemberBinding="{Binding sender}"/>
                     </GridView>
-                </ListView.View>
-            </ListView>
+                </ListView.View
+            </ListView>-->
         </Grid>
 
 

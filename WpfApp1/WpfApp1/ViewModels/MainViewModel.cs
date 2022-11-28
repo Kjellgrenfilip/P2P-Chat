@@ -124,11 +124,36 @@ namespace WpfApp1.ViewModels
             this.Listen = new StartListeningCommand(this);
             this.ConnectCommand = new RequestConnectionCommand(this);
 
+            TestList.Add(new MessageTest()
+            {
+                msg = "Tjo man!",
+                sender = "Kalle",
+                date = " - [" + DateTime.Now.ToString("g") + "]: "
+            });
+            TestList.Add(new MessageTest()
+            {
+                msg = "Tjabba Killen!",
+                sender = "Peter",
+                date = " - [" + DateTime.Now.ToString("g") + "]: "
+            });  
+            TestList.Add(new MessageTest()
+            {
+                msg = "VGD?",
+                sender = "Kalle",
+                date = " - ["+DateTime.Now.ToString("g")+"]: "
+            });
+
 
         }
         public void sendMessage()
         {
             Connection.sendMessage(MessageToSend);
+            TestList.Add(new MessageTest()
+            {
+                msg = MessageToSend,
+                sender = UserName,
+                date = " - [" + DateTime.Now.ToString("g") + "]: "
+            });
         }
         public void listen()
         {
@@ -158,7 +183,8 @@ namespace WpfApp1.ViewModels
                 TestList.Add(new MessageTest()
                 {
                     msg = Connection.MessageRecieved,
-                    sender = ""
+                    sender = "",
+                    date = " - [" + DateTime.Now.ToString("g") + "]: "
                 });
             }
             
@@ -199,5 +225,6 @@ namespace WpfApp1.ViewModels
     {
         public String msg { get; set; }
         public String sender { get; set; }
+        public String date { get; set; }  
     }
 }
