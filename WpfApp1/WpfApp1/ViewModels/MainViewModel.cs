@@ -17,6 +17,7 @@ namespace WpfApp1.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+       
         public ObservableCollection<MessageTest> _testList = new ObservableCollection<MessageTest>();
         
 
@@ -160,14 +161,35 @@ namespace WpfApp1.ViewModels
                     sender = ""
                 });
             }
-            if (e.PropertyName == "Connected")
+            
+            if (e.PropertyName == "ConnectionAccepted")
             {
-                if(Connection.Connected)
+                if(Connection.ConnectionAccepted)
                 { RequestOK = "Connected"; }
                 else
                 {
-                    MessageBox.Show("Could not connect to "+ConnectIP+":"+ConnectPort);
-                    RequestOK = "Connection failed";
+                    MessageBox.Show("The user denied your request :(");
+                    RequestOK = "Request denied";
+                }
+            }
+            if (e.PropertyName == "IncomingRequest")
+            {
+                //Fråga användaren om en connection
+                MessageBoxResult msgResult = MessageBox.Show(Connection.IncomingRequest.username + " want to chat with you!!", "Some Title", MessageBoxButton.YesNo);
+                if (msgResult == MessageBoxResult.Yes)
+                {
+                    Connection.sendResponse(true);
+                }
+                else
+                {
+                    Connection.sendResponse(false);
+                }
+            }
+            if(e.PropertyName == "ConnectionError")
+            {
+                if(Connection.ConnectionError)
+                {
+                    MessageBox.Show("Could not connect to the given port");
                 }
             }
         }

@@ -28,21 +28,63 @@ namespace WpfApp1.Models
                 }));
             
         }
-
+        //Client properties
         private Socket sendSocket;
         private Socket listeningSocket;
         private Socket connectionSocket;
+        //User data
         private int myPort;
         private String myUserName;
+       //Event triggers
+        private bool connectionError = false;
+        private bool connectionAccepted = false;
+        private RequestData incomingRequest;
+        private String messageRecieved;
+
+        public bool ConnectionError
+        {
+            get { return connectionError; }
+            set
+            {
+                connectionError = value;
+                OnPropertyChanged();
+            }
+        }
+        public RequestData IncomingRequest
+        {
+            get { return incomingRequest; }
+            set
+            {
+                incomingRequest = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool ConnectionAccepted
+        {
+            get { return connectionAccepted; }
+            set
+            {
+                connectionAccepted = value;
+                OnPropertyChanged();
+            }
+        }
+        public String MessageRecieved
+        {
+            get { return messageRecieved; }
+            set
+            {
+                messageRecieved = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ConnectionHandler()
         {
             listeningSocket = new Socket(AddressFamily.InterNetwork,
-            SocketType.Stream, ProtocolType.Tcp); 
-            
-            sendSocket = new Socket(AddressFamily.InterNetwork,
             SocketType.Stream, ProtocolType.Tcp);
 
+            sendSocket = new Socket(AddressFamily.InterNetwork,
+            SocketType.Stream, ProtocolType.Tcp);
 
             connectionSocket = new Socket(AddressFamily.InterNetwork,
             SocketType.Stream, ProtocolType.Tcp);
@@ -71,10 +113,10 @@ namespace WpfApp1.Models
             {
                 //Kan säga att result är ogiltigt, kolla in ManualResetEvent
                 //MessageBox.Show(e.ToString());
-                Connected = false;
+                ConnectionError = true;
                 return;
             }
-            Connected = true;
+           
             RequestData tmp1 = new RequestData
             {
                 username = myUserName,
@@ -85,6 +127,7 @@ namespace WpfApp1.Models
             string jsonString = JsonConvert.SerializeObject(tmp1);
             byte[] msg = Encoding.ASCII.GetBytes(jsonString);
             sendSocket.Send(msg);
+
         }
 
         public bool listen(String port)
@@ -130,22 +173,8 @@ namespace WpfApp1.Models
                 IPEndPoint endPoint = new IPEndPoint(address, tmp_p);
                 sendSocket.Connect(endPoint);
 
-                MessageBoxResult msgResult = MessageBox.Show(jsonObject.username + " want to chat with you!!", "Some Title", MessageBoxButton.YesNo);
-                if (msgResult == MessageBoxResult.No)
-                {
-                    jsonString = JsonConvert.SerializeObject(new ResponseData
-                    {
-                        accepted = false
-                    });
-                    byte[] msg1 = Encoding.ASCII.GetBytes(jsonString);
-                    sendSocket.Send(msg1);
-                    return;
-                }
-                
-                jsonString = JsonConvert.SerializeObject(new ResponseData {
-                accepted= true});
-                byte[] msg = Encoding.ASCII.GetBytes(jsonString);
-                sendSocket.Send(msg);
+                IncomingRequest = jsonObject;
+
             }
             else//Om vi är den som väntar på respons på requesten, gå vi in här
             {
@@ -154,20 +183,41 @@ namespace WpfApp1.Models
                 ResponseData? jsonObject = JsonConvert.DeserializeObject<ResponseData>(jsonString);
                 if (!jsonObject.accepted)
                 {
-                    Connected = false;
+                    ConnectionAccepted = false;
+                    sendSocket.Shutdown(SocketShutdown.Both);
+                    sendSocket.Close();
+                    sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     return;
                 }
 
-                Connected = true;
+                ConnectionAccepted = true;
 
             }
+            /*
             while (true)
             {
                 connectionSocket.Receive(buffer);
              
                 MessageRecieved = System.Text.Encoding.Default.GetString(buffer);
+            } */
             }
+
+        public void sendResponse(bool answer)
+        {
+            string jsonString = JsonConvert.SerializeObject(new ResponseData
+            {
+                accepted = answer
+            });
+            byte[] msg = Encoding.ASCII.GetBytes(jsonString);
+            sendSocket.Send(msg);
+            if(answer == false)
+            {
+                sendSocket.Shutdown(SocketShutdown.Both);
+                sendSocket.Close();
+                sendSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream, ProtocolType.Tcp);
+                listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
             }
+        }
 
         public void sendMessage(String message)
         {
@@ -178,26 +228,7 @@ namespace WpfApp1.Models
           
         }
 
-        private bool connected = false;
-        public String messageRecieved;
-        public bool Connected
-        {
-            get { return connected; }
-            set { 
-                connected = value;
-                OnPropertyChanged();
-            }
-        }
-        public String MessageRecieved
-        {
-            get { return messageRecieved; }
-            set
-            {
-                messageRecieved = value;
-                OnPropertyChanged();
-            }
-        }
-
+        
 
     }
 
