@@ -28,10 +28,11 @@ namespace WpfApp1.ViewModels
 
         private ConnectionHandler _connection;
         private String _messageToSend;
-        private String _userName;
-        private String _listenPort;
+        private String _userName="";
+        private String _listenPort="";
         private String _connectPort;
         private String _connectIP;
+        private String _statusColor = "Red";
                 
         private ICommand _connectCommand;
 
@@ -71,6 +72,13 @@ namespace WpfApp1.ViewModels
         {
             get { return _listenPort; }
             set { _listenPort = value; }
+        }
+        public String StatusColor
+        {
+            get { return _statusColor; }
+            set { _statusColor = value;
+                OnPropertyChanged();
+            }
         }
 
         public String ConnectPort
@@ -126,21 +134,9 @@ namespace WpfApp1.ViewModels
 
             TestList.Add(new MessageTest()
             {
-                msg = "Tjo man!",
-                sender = "Kalle",
-                date = " - [" + DateTime.Now.ToString("g") + "]: "
-            });
-            TestList.Add(new MessageTest()
-            {
-                msg = "Tjabba Killen!",
-                sender = "Peter",
-                date = " - [" + DateTime.Now.ToString("g") + "]: "
-            });  
-            TestList.Add(new MessageTest()
-            {
-                msg = "VGD?",
-                sender = "Kalle",
-                date = " - ["+DateTime.Now.ToString("g")+"]: "
+                msg = "TEST",
+                sender = "TEST2",
+                date = " - [" + "HEJ" + "]: "
             });
 
 
@@ -157,22 +153,30 @@ namespace WpfApp1.ViewModels
         }
         public void listen()
         {
+            ListenOK = "";
+            ListenOK = (UserName == "") ? "No name entered\n" : "";
+            ListenOK += (ListenPort == "") ? "No port entered" : "";
             
-            if (Connection.listen(ListenPort))
+            if(UserName != "" && ListenPort != "")
             {
-                ListenOK = "Listening on PORT: " + ListenPort;
-                
+                ListenOK += (Int32.Parse(ListenPort) > 0) && (Int32.Parse(ListenPort) < (2 ^ 16)) ? "" : "Invalid PORT";
+                if (ListenOK == "" && Connection.listen(ListenPort, UserName))
+                {
+                    ListenOK = "Listening on PORT: \n" + ListenPort;
+                    StatusColor = "Green";
+                }
+                else
+                {
+                    
+                }
             }
-                
-            else
-                ListenOK = "NOT NICE WORK MAN";
-
+            
         }
 
         public void requestConnection()
         {
             RequestOK = "sending";
-            Connection.requestConnection(ConnectIP, ConnectPort, ListenPort, UserName);
+            Connection.requestConnection(ConnectIP, ConnectPort, ListenPort);
 
         }
 
@@ -182,16 +186,19 @@ namespace WpfApp1.ViewModels
             {
                 TestList.Add(new MessageTest()
                 {
-                    msg = Connection.MessageRecieved,
-                    sender = "",
-                    date = " - [" + DateTime.Now.ToString("g") + "]: "
+                    msg = Connection.MessageRecieved.message,
+                    sender = Connection.MessageRecieved.sender,
+                    date = " - [" + Connection.MessageRecieved.date + "]: "
                 });
             }
             
             if (e.PropertyName == "ConnectionAccepted")
             {
                 if(Connection.ConnectionAccepted)
-                { RequestOK = "Connected"; }
+                { 
+                    RequestOK = "Connected";
+                    Connection.receiveMessages();
+                }
                 else
                 {
                     MessageBox.Show("The user denied your request :(");
@@ -205,6 +212,7 @@ namespace WpfApp1.ViewModels
                 if (msgResult == MessageBoxResult.Yes)
                 {
                     Connection.sendResponse(true);
+                    Connection.receiveMessages();
                 }
                 else
                 {

@@ -35,11 +35,12 @@ namespace WpfApp1.Models
         //User data
         private int myPort;
         private String myUserName;
+        private byte[] messageBuffer = new byte[1024];
        //Event triggers
         private bool connectionError = false;
         private bool connectionAccepted = false;
         private RequestData incomingRequest;
-        private String messageRecieved;
+        private MessageData messageRecieved;
 
         public bool ConnectionError
         {
@@ -68,7 +69,7 @@ namespace WpfApp1.Models
                 OnPropertyChanged();
             }
         }
-        public String MessageRecieved
+        public MessageData MessageRecieved
         {
             get { return messageRecieved; }
             set
@@ -90,14 +91,14 @@ namespace WpfApp1.Models
             SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public void requestConnection(String _ip, String port, String lPort, String username)
+        public void requestConnection(String _ip, String port, String lPort)
         {
             byte[] ip = new byte[4] { 127, 0, 0, 1 };
             
             IPAddress address = new IPAddress(ip);
             IPEndPoint endPoint = new IPEndPoint(address, Int32.Parse(port));
             myPort = Int32.Parse(lPort);
-            myUserName = username;
+     
 
             sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
         }
@@ -130,9 +131,9 @@ namespace WpfApp1.Models
 
         }
 
-        public bool listen(String port)
+        public bool listen(String port, String username)
         {
-             
+            myUserName = username;
             byte[] ip = new byte[4]{127,0,0,1 };
             
             int tmp_p = Int32.Parse(port);
@@ -165,7 +166,7 @@ namespace WpfApp1.Models
 
                 connectionSocket.Receive(buffer);
 
-                string jsonString = Encoding.Default.GetString(buffer);
+                string jsonString = Encoding.ASCII.GetString(buffer);
                 RequestData? jsonObject = JsonConvert.DeserializeObject<RequestData>(jsonString);
                 int tmp_p = jsonObject.port;
                 byte[] ip = new byte[4] { 127, 0, 0, 1 };
@@ -176,7 +177,7 @@ namespace WpfApp1.Models
                 IncomingRequest = jsonObject;
 
             }
-            else//Om vi är den som väntar på respons på requesten, gå vi in här
+            else//Om vi är den som väntar på respons på requesten, går vi in här
             {
                 connectionSocket.Receive(buffer);
                 string jsonString = Encoding.Default.GetString(buffer);
@@ -187,21 +188,14 @@ namespace WpfApp1.Models
                     sendSocket.Shutdown(SocketShutdown.Both);
                     sendSocket.Close();
                     sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
                     return;
                 }
 
                 ConnectionAccepted = true;
 
             }
-            
-            while (true)
-            {
-                buffer = new byte[buffer.Length];
-                connectionSocket.Receive(buffer);
-             
-                MessageRecieved = System.Text.Encoding.Default.GetString(buffer);
-            } 
-            }
+        }
 
         public void sendResponse(bool answer)
         {
@@ -220,15 +214,37 @@ namespace WpfApp1.Models
             }
         }
 
-        public void sendMessage(String message)
+        public void sendMessage(String msg)
         {
             // Here is the code which sends the data over the network.
             // No user interaction shall exist in the model.
-            byte[] buf = Encoding.ASCII.GetBytes(message);
+
+            string jsonString = JsonConvert.SerializeObject(new MessageData
+            {
+                sender = myUserName,
+                message = msg,
+                date = DateTime.Now.ToString("g")
+            });
+           
+            byte[] buf = Encoding.ASCII.GetBytes(jsonString);
             sendSocket.Send(buf);
         }
 
-        
+        public void receiveMessages()
+        {
+            connectionSocket.BeginReceive(messageBuffer, 0, 1024, 0, new AsyncCallback(onReceive), connectionSocket);
+        }
+
+        public void onReceive(IAsyncResult result)
+        {
+            string jsonString = Encoding.ASCII.GetString(messageBuffer);
+            MessageData? jsonObject = JsonConvert.DeserializeObject<MessageData>(jsonString);
+            MessageRecieved = jsonObject;
+            Array.Clear(messageBuffer, 0, messageBuffer.Length);            
+            receiveMessages();
+        }
+
+
 
     }
 
@@ -241,5 +257,11 @@ namespace WpfApp1.Models
     public class ResponseData
     {
         public bool accepted;
+    }
+    public class MessageData
+    {
+        public string sender;
+        public string message;
+        public string date;
     }
 }
