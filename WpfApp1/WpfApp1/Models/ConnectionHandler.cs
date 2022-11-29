@@ -243,7 +243,13 @@ namespace WpfApp1.Models
             Array.Clear(messageBuffer, 0, messageBuffer.Length);            
             receiveMessages();
         }
-
+        public void requestDisconnection()
+        {
+            sendSocket.Shutdown(SocketShutdown.Both);
+            sendSocket.Close();
+            sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
+        }
 
 
     }

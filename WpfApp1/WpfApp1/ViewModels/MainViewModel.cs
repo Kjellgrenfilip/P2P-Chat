@@ -32,14 +32,15 @@ namespace WpfApp1.ViewModels
         private String _listenPort="";
         private String _connectPort;
         private String _connectIP;
-        private String _statusColor = "Red";
-                
-        private ICommand _connectCommand;
+        private String _listeningStatusColor = "Red";
+        private String _connectionStatusColor = "Red";
 
+        private ICommand _connectCommand;
+        private ICommand _disconnectCommand;
         private ICommand _pushCommand;
         private ICommand _listen;
-        private String _listenOK ="NOT TODAY";
-        private String _requestOK = "NOT TODAY";
+        private String _listenOK ="NOT LISTENING";
+        private String _requestOK = "NOT CONNECTED";
 
         public ConnectionHandler Connection
         {
@@ -73,10 +74,19 @@ namespace WpfApp1.ViewModels
             get { return _listenPort; }
             set { _listenPort = value; }
         }
-        public String StatusColor
+        public String ListeningStatusColor
         {
-            get { return _statusColor; }
-            set { _statusColor = value;
+            get { return _listeningStatusColor; }
+            set { _listeningStatusColor = value;
+                OnPropertyChanged();
+            }
+        }
+        public String ConnectionStatusColor
+        {
+            get { return _connectionStatusColor; }
+            set
+            {
+                _connectionStatusColor = value;
                 OnPropertyChanged();
             }
         }
@@ -124,6 +134,11 @@ namespace WpfApp1.ViewModels
             get { return _connectCommand; }
             set { _connectCommand = value; }
         }
+        public ICommand DisconnectCommand
+        {
+            get { return _disconnectCommand; }
+            set { _disconnectCommand = value; }
+        }
         public MainViewModel(ConnectionHandler connectionHandler)
         {
             this.Connection = connectionHandler;
@@ -131,6 +146,7 @@ namespace WpfApp1.ViewModels
             this.PushCommand = new SendMessageCommand(this);
             this.Listen = new StartListeningCommand(this);
             this.ConnectCommand = new RequestConnectionCommand(this);
+            this.DisconnectCommand = new RequestDisconnectionCommand(this);
 
             TestList.Add(new MessageTest()
             {
@@ -159,15 +175,15 @@ namespace WpfApp1.ViewModels
             
             if(UserName != "" && ListenPort != "")
             {
-                ListenOK += (Int32.Parse(ListenPort) > 0) && (Int32.Parse(ListenPort) < (2 ^ 16)) ? "" : "Invalid PORT";
-                if (ListenOK == "" && Connection.listen(ListenPort, UserName))
+                
+                if ((Int32.Parse(ListenPort) > 0) && (Int32.Parse(ListenPort) < (65536)) && Connection.listen(ListenPort, UserName))
                 {
                     ListenOK = "Listening on PORT: \n" + ListenPort;
-                    StatusColor = "Green";
+                    ListeningStatusColor = "Green";
                 }
                 else
                 {
-                    
+                    ListenOK = "Invalid PORT";
                 }
             }
             
@@ -180,6 +196,11 @@ namespace WpfApp1.ViewModels
 
         }
 
+        public void requestDisconnection()
+        {
+            RequestOK = "disconnected";
+            Connection.requestDisconnection();
+        }
         public void EventFromModel(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "MessageRecieved")
@@ -197,6 +218,7 @@ namespace WpfApp1.ViewModels
                 if(Connection.ConnectionAccepted)
                 { 
                     RequestOK = "Connected";
+                    ConnectionStatusColor = "Green";
                     Connection.receiveMessages();
                 }
                 else

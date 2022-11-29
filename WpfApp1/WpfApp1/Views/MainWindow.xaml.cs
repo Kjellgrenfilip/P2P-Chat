@@ -28,5 +28,10 @@ namespace WpfApp1
             this.DataContext = mainViewModel;
 
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
