@@ -198,21 +198,34 @@ namespace WpfApp1.ViewModels
 
         public void requestDisconnection()
         {
-            RequestOK = "disconnected";
+            RequestOK = "disconnecting";
             Connection.requestDisconnection();
+               
         }
         public void EventFromModel(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "MessageRecieved")
-            {
+            { 
                 TestList.Add(new MessageTest()
                 {
                     msg = Connection.MessageRecieved.message,
                     sender = Connection.MessageRecieved.sender,
                     date = " - [" + Connection.MessageRecieved.date + "]: "
                 });
-            }
-            
+                    /*   if(Connection.MessageRecieved.message == "Disconnect")
+                       {
+                           MessageBox.Show("The user Disconnected from the chat");
+                           Connection.requestDisconnection();
+                       }
+
+                       else
+                       {
+                           });
+                       }
+                       */
+                }
+
+
             if (e.PropertyName == "ConnectionAccepted")
             {
                 if(Connection.ConnectionAccepted)
