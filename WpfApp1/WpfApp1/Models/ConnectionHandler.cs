@@ -11,11 +11,11 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-
+using System.Net.WebSockets;
 
 namespace WpfApp1.Models
 {
-    public class ConnectionHandler : INotifyPropertyChanged
+    public class ConnectionHandler : INotifyPropertyChanged 
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -39,6 +39,7 @@ namespace WpfApp1.Models
        //Event triggers
         private bool connectionError = false;
         private bool connectionAccepted = false;
+        private bool disconnection = false;
         private RequestData incomingRequest;
         private MessageData messageRecieved;
 
@@ -69,6 +70,17 @@ namespace WpfApp1.Models
                 OnPropertyChanged();
             }
         }
+        public bool Disconnection
+        {
+            get { return disconnection; }
+            set
+            {
+                disconnection = value;
+                connectionAccepted = false;
+                connectionError = false;
+                OnPropertyChanged();
+            }
+        }
         public MessageData MessageRecieved
         {
             get { return messageRecieved; }
@@ -91,15 +103,13 @@ namespace WpfApp1.Models
             SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public void requestConnection(String _ip, String port, String lPort)
+        public void requestConnection(String _ip, String port)
         {
             byte[] ip = new byte[4] { 127, 0, 0, 1 };
             
             IPAddress address = new IPAddress(ip);
             IPEndPoint endPoint = new IPEndPoint(address, Int32.Parse(port));
-            myPort = Int32.Parse(lPort);
-     
-
+    
             sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
         }
 
@@ -134,36 +144,44 @@ namespace WpfApp1.Models
         public bool listen(String port, String username)
         {
             myUserName = username;
-            byte[] ip = new byte[4]{127,0,0,1 };
-            
-            int tmp_p = Int32.Parse(port);
-
+            myPort = Int32.Parse(port);
+            byte[] ip = new byte[4]{127,0,0,1};
             IPAddress address = new IPAddress(ip);
-            IPEndPoint endPoint = new IPEndPoint(address, tmp_p);
-            listeningSocket.Bind(endPoint);
-            listeningSocket.Listen(100);
+            IPEndPoint endPoint = new IPEndPoint(address, myPort);
+
             try
             {
-                listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
+                listeningSocket.Bind(endPoint);
+                listeningSocket.Listen(100);
             }
             catch(Exception e)
             {
                 MessageBox.Show(e.Message);
+                return false;
             }
-                
+
+            listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
+
             return true;
         }
 
         public void onAccept(IAsyncResult result)
         {
             byte[] buffer = new byte[1024];
-            connectionSocket = listeningSocket.EndAccept(result);
+            try
+            {
+                connectionSocket = listeningSocket.EndAccept(result);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
 
 
             //Om vår sendSocket inte är ansluten: Ta emot portnummer och anslut
             if(!sendSocket.Connected)
-            {//Den som får förfrågan kommer gå in i detta scope
-
+            {
+                //Den som får förfrågan kommer gå in i detta scope
                 connectionSocket.Receive(buffer);
 
                 string jsonString = Encoding.ASCII.GetString(buffer);
@@ -177,8 +195,9 @@ namespace WpfApp1.Models
                 IncomingRequest = jsonObject;
 
             }
-            else//Om vi är den som väntar på respons på requesten, går vi in här
+            else
             {
+                //Om vi är den som väntar på respons på requesten, går vi in här
                 connectionSocket.Receive(buffer);
                 string jsonString = Encoding.Default.GetString(buffer);
                 ResponseData? jsonObject = JsonConvert.DeserializeObject<ResponseData>(jsonString);
@@ -212,6 +231,11 @@ namespace WpfApp1.Models
                 sendSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream, ProtocolType.Tcp);
                 listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
             }
+            else
+            {
+                ConnectionAccepted = true;
+            }
+           
         }
 
         public void sendMessage(String msg)
@@ -238,17 +262,31 @@ namespace WpfApp1.Models
         public void onReceive(IAsyncResult result)
         {
             string jsonString = Encoding.ASCII.GetString(messageBuffer);
+         
             MessageData? jsonObject = JsonConvert.DeserializeObject<MessageData>(jsonString);
-            MessageRecieved = jsonObject;
-            Array.Clear(messageBuffer, 0, messageBuffer.Length);            
-            receiveMessages();
+            if(jsonObject != null)
+            {
+                MessageRecieved = jsonObject;
+                Array.Clear(messageBuffer, 0, messageBuffer.Length);
+                receiveMessages();
+            }
+            else if(sendSocket.Connected)
+            {
+                sendSocket.Shutdown(SocketShutdown.Both);
+                sendSocket.Close();
+                sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                Disconnection = true;
+                listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);                  
+            }
         }
-        public bool requestDisconnection()
+        public bool Disconnect()
         {
-            sendMessage("Disconnect");
+            if (!sendSocket.Connected)
+                return false;
             sendSocket.Shutdown(SocketShutdown.Both);
             sendSocket.Close();
             sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Disconnection = true;
             listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
             return true;
         }
@@ -267,9 +305,18 @@ namespace WpfApp1.Models
         public bool accepted;
     }
     public class MessageData
-    {
+    { 
         public string sender;
         public string message;
         public string date;
     }
+
+    enum MessageType
+    {
+        Request,    //0
+        Response,   //1
+        Message,    //2
+        Disconnect  //3
+    }
+
 }

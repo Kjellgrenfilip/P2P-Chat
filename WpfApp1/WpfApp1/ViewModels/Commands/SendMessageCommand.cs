@@ -98,7 +98,7 @@ namespace WpfApp1.ViewModels.Commands
 }
 namespace WpfApp1.ViewModels.Commands
 {
-    internal class RequestDisconnectionCommand : ICommand
+    internal class DisconnectCommand : ICommand
     {
         public event EventHandler? CanExecuteChanged;
         private MainViewModel _parent;
@@ -109,7 +109,7 @@ namespace WpfApp1.ViewModels.Commands
             set { _parent = value; }
         }
 
-        public RequestDisconnectionCommand(MainViewModel parent)
+        public DisconnectCommand(MainViewModel parent)
         {
             this.Parent = parent;
         }
@@ -121,7 +121,7 @@ namespace WpfApp1.ViewModels.Commands
 
         public void Execute(object? parameter)
         {
-            Parent.requestDisconnection();
+            Parent.Disconnect();
         }
     }
 }

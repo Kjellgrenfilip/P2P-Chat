@@ -55,7 +55,7 @@
 
             <Button Command="{Binding ConnectCommand}"  Grid.Column="0"  Grid.Row="5" Margin="10,25,10,95" Background="Green">Connect</Button>
             <Border BorderBrush="{Binding ConnectionStatusColor}" Margin="10" Grid.Row="5" Grid.Column="1" BorderThickness="5">
-                <TextBlock Text="{Binding RequestOK}" Background="AliceBlue"></TextBlock>
+                <TextBlock Text="{Binding ConnectionStatus}" Background="AliceBlue"></TextBlock>
             </Border>
             <Button Command="{Binding DisconnectCommand}"  Grid.Column="0"  Grid.Row="5" Margin="10,95,10,25" Background="Red" >Disconnect</Button>
 

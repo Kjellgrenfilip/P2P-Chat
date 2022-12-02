@@ -40,7 +40,7 @@ namespace WpfApp1.ViewModels
         private ICommand _pushCommand;
         private ICommand _listen;
         private String _listenOK ="NOT LISTENING";
-        private String _requestOK = "NOT CONNECTED";
+        private String _connectionStatus = "NOT CONNECTED";
 
         public ConnectionHandler Connection
         {
@@ -109,12 +109,12 @@ namespace WpfApp1.ViewModels
                 OnPropertyChanged();
             }
         }
-        public String RequestOK
+        public String ConnectionStatus
         {
-            get { return _requestOK; }
+            get { return _connectionStatus; }
             set
             {
-                _requestOK = value;
+                _connectionStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -146,7 +146,7 @@ namespace WpfApp1.ViewModels
             this.PushCommand = new SendMessageCommand(this);
             this.Listen = new StartListeningCommand(this);
             this.ConnectCommand = new RequestConnectionCommand(this);
-            this.DisconnectCommand = new RequestDisconnectionCommand(this);
+            this.DisconnectCommand = new DisconnectCommand(this);
 
             TestList.Add(new MessageTest()
             {
@@ -159,13 +159,21 @@ namespace WpfApp1.ViewModels
         }
         public void sendMessage()
         {
-            Connection.sendMessage(MessageToSend);
-            TestList.Add(new MessageTest()
+            if(Connection.ConnectionAccepted)
             {
-                msg = MessageToSend,
-                sender = UserName,
-                date = " - [" + DateTime.Now.ToString("g") + "]: "
-            });
+                Connection.sendMessage(MessageToSend);
+                TestList.Add(new MessageTest()
+                {
+                    msg = MessageToSend,
+                    sender = UserName,
+                    date = " - [" + DateTime.Now.ToString("g") + "]: "
+                });
+            }
+            else
+            {
+                MessageBox.Show("Could not send message: Not connected to user.");
+            }
+            
         }
         public void listen()
         {
@@ -186,58 +194,55 @@ namespace WpfApp1.ViewModels
                     ListenOK = "Invalid PORT";
                 }
             }
-            
         }
 
         public void requestConnection()
         {
-            RequestOK = "sending";
-            Connection.requestConnection(ConnectIP, ConnectPort, ListenPort);
-
+            ConnectionStatus = "sending";
+            Connection.requestConnection(ConnectIP, ConnectPort);
         }
 
-        public void requestDisconnection()
+        public void Disconnect()
         {
-            RequestOK = "disconnecting";
-            Connection.requestDisconnection();
-               
+            if(Connection.Disconnect())
+                ConnectionStatus = "disconnecting";
         }
         public void EventFromModel(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "MessageRecieved")
             { 
+                if(Connection.MessageRecieved.message == "Disconnect")
+                {
+                    MessageBox.Show("DISCONNECT");
+                }
                 TestList.Add(new MessageTest()
                 {
                     msg = Connection.MessageRecieved.message,
                     sender = Connection.MessageRecieved.sender,
                     date = " - [" + Connection.MessageRecieved.date + "]: "
                 });
-                    /*   if(Connection.MessageRecieved.message == "Disconnect")
-                       {
-                           MessageBox.Show("The user Disconnected from the chat");
-                           Connection.requestDisconnection();
-                       }
-
-                       else
-                       {
-                           });
-                       }
-                       */
+            }
+            if (e.PropertyName == "Disconnection")
+            {
+                if(Connection.Disconnection)
+                {
+                    ConnectionStatus = "Disconnected";
+                    ConnectionStatusColor = "Red";
                 }
-
+            }
 
             if (e.PropertyName == "ConnectionAccepted")
             {
                 if(Connection.ConnectionAccepted)
                 { 
-                    RequestOK = "Connected";
+                    ConnectionStatus = "Connected";
                     ConnectionStatusColor = "Green";
                     Connection.receiveMessages();
                 }
                 else
                 {
                     MessageBox.Show("The user denied your request :(");
-                    RequestOK = "Request denied";
+                    ConnectionStatus = "Request denied";
                 }
             }
             if (e.PropertyName == "IncomingRequest")

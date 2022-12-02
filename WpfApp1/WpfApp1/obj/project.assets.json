@@ -55,24 +55,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kjell\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\lager\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Programmering\\UNI\\TDDD49\\projekt\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
+      "projectUniqueName": "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
       "projectName": "TDDD49Template",
-      "projectPath": "D:\\Programmering\\UNI\\TDDD49\\projekt\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
-      "packagesPath": "C:\\Users\\kjell\\.nuget\\packages\\",
-      "outputPath": "D:\\Programmering\\UNI\\TDDD49\\projekt\\tddd49projekt\\WpfApp1\\WpfApp1\\obj\\",
+      "projectPath": "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
+      "packagesPath": "C:\\Users\\lager\\.nuget\\packages\\",
+      "outputPath": "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\kjell\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\lager\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -80,7 +75,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
