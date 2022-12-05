@@ -17,7 +17,7 @@ namespace WpfApp1
     {
         private void Main(Object Sender, StartupEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow(new MainViewModel(new ConnectionHandler()));
+            MainWindow mainWindow = new MainWindow(new MainViewModel(new ConnectionHandler(), new HistoryHandler()));
             mainWindow.Title = "Chat";
             mainWindow.Show();
         }

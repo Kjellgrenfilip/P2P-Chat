@@ -36,7 +36,7 @@ namespace WpfApp1.Models
         private int myPort;
         private String myUserName;
         private byte[] messageBuffer = new byte[1024];
-       //Event triggers
+        //Event triggers
         private bool connectionError = false;
         private bool connectionAccepted = false;
         private bool disconnection = false;

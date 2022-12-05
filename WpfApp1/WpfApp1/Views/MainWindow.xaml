@@ -71,7 +71,7 @@
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="7*"></RowDefinition>
+                <RowDefinition Height="9*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -82,15 +82,13 @@
                 <ItemsControl ItemsSource="{Binding TestList}">
                 <ItemsControl.ItemTemplate> <!-- Gör en template för varje inkommande row/meddelande-->
                     <DataTemplate>
-                        <Border BorderBrush="Black" Margin="10" Padding="10" BorderThickness="2">
-                            
-                                <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="WhiteSmoke" Margin="10" Padding="10" BorderThickness="2">
+                                <StackPanel Orientation="Horizontal" Background="{Binding MessageBoxColor}">
                                     <TextBlock Text="{Binding sender}"></TextBlock>
                                     <TextBlock Text="{Binding date}"></TextBlock>
                                     <TextBlock Text="{Binding msg}"></TextBlock>
                                 </StackPanel>
-                           
-                        </Border>
+                            </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

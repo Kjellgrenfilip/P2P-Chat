@@ -27,6 +27,7 @@ namespace WpfApp1.ViewModels
         }
 
         private ConnectionHandler _connection;
+        private HistoryHandler _historyHandler;
         private String _messageToSend;
         private String _userName="";
         private String _listenPort="";
@@ -34,6 +35,7 @@ namespace WpfApp1.ViewModels
         private String _connectIP;
         private String _listeningStatusColor = "Red";
         private String _connectionStatusColor = "Red";
+        private String _messageBoxColor = "Black";
 
         private ICommand _connectCommand;
         private ICommand _disconnectCommand;
@@ -49,7 +51,15 @@ namespace WpfApp1.ViewModels
             {
                 _connection = value;
             }
+        }
 
+        public HistoryHandler HistoryHandler
+        {
+            get { return _historyHandler; }
+            set
+            {
+                _historyHandler = value;
+            }
         }
 
         public ObservableCollection<MessageTest> TestList
@@ -87,6 +97,15 @@ namespace WpfApp1.ViewModels
             set
             {
                 _connectionStatusColor = value;
+                OnPropertyChanged();
+            }
+        }
+        public String MessageBoxColor
+        {
+            get { return _messageBoxColor; }
+            set
+            {
+                _messageBoxColor = value;
                 OnPropertyChanged();
             }
         }
@@ -139,21 +158,17 @@ namespace WpfApp1.ViewModels
             get { return _disconnectCommand; }
             set { _disconnectCommand = value; }
         }
-        public MainViewModel(ConnectionHandler connectionHandler)
+        public MainViewModel(ConnectionHandler connectionHandler, HistoryHandler h)
         {
             this.Connection = connectionHandler;
+            this.HistoryHandler = h;
             Connection.PropertyChanged += EventFromModel;
             this.PushCommand = new SendMessageCommand(this);
             this.Listen = new StartListeningCommand(this);
             this.ConnectCommand = new RequestConnectionCommand(this);
             this.DisconnectCommand = new DisconnectCommand(this);
 
-            TestList.Add(new MessageTest()
-            {
-                msg = "TEST",
-                sender = "TEST2",
-                date = " - [" + "HEJ" + "]: "
-            });
+            
 
 
         }
@@ -162,6 +177,7 @@ namespace WpfApp1.ViewModels
             if(Connection.ConnectionAccepted)
             {
                 Connection.sendMessage(MessageToSend);
+                MessageBoxColor = "Orange";
                 TestList.Add(new MessageTest()
                 {
                     msg = MessageToSend,
@@ -181,6 +197,12 @@ namespace WpfApp1.ViewModels
             ListenOK = (UserName == "") ? "No name entered\n" : "";
             ListenOK += (ListenPort == "") ? "No port entered" : "";
             
+            if(Connection.ConnectionAccepted)
+            {
+                MessageBox.Show("Please disconnect first");
+                return;
+            }
+
             if(UserName != "" && ListenPort != "")
             {
                 
@@ -215,6 +237,7 @@ namespace WpfApp1.ViewModels
                 {
                     MessageBox.Show("DISCONNECT");
                 }
+                MessageBoxColor = "White";
                 TestList.Add(new MessageTest()
                 {
                     msg = Connection.MessageRecieved.message,
