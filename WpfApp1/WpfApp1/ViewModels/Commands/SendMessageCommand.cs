@@ -125,3 +125,94 @@ namespace WpfApp1.ViewModels.Commands
         }
     }
 }
+
+namespace WpfApp1.ViewModels.Commands
+{
+    internal class HistoryCommand : ICommand
+    {
+        public event EventHandler? CanExecuteChanged;
+        private MainViewModel _parent;
+
+        public MainViewModel Parent
+        {
+            get { return _parent; }
+            set { _parent = value; }
+        }
+
+        public HistoryCommand(MainViewModel parent)
+        {
+            this.Parent = parent;
+        }
+
+        public bool CanExecute(object? parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object? parameter)
+        {
+            Parent.ToggleHistory();
+        }
+    }
+}
+
+namespace WpfApp1.ViewModels.Commands
+{
+    internal class SearchCommand : ICommand
+    {
+        public event EventHandler? CanExecuteChanged;
+        private MainViewModel _parent;
+
+        public MainViewModel Parent
+        {
+            get { return _parent; }
+            set { _parent = value; }
+        }
+
+        public SearchCommand(MainViewModel parent)
+        {
+            this.Parent = parent;
+        }
+
+        public bool CanExecute(object? parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object? parameter)
+        {
+            Parent.SearchHistory();
+        }
+    }
+}
+
+namespace WpfApp1.ViewModels.Commands
+{
+    internal class ShowConversationCommand : ICommand
+    {
+        public event EventHandler? CanExecuteChanged;
+        private MainViewModel _parent;
+
+        public MainViewModel Parent
+        {
+            get { return _parent; }
+            set { _parent = value; }
+        }
+
+        public ShowConversationCommand(MainViewModel parent)
+        {
+            this.Parent = parent;
+        }
+
+        public bool CanExecute(object? parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object? parameter)
+        {
+        
+            Parent.ShowConversation((string)parameter);
+        }
+    }
+}
