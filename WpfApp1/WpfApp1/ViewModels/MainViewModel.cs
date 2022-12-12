@@ -271,7 +271,8 @@ namespace WpfApp1.ViewModels
                     {
                         msg = MessageToSend,
                         sender = UserName,
-                        date = " - [" + DateTime.Now.ToString("g") + "]: "
+                        date = " - [" + DateTime.Now.ToString("g") + "]: ",
+                        boxColor = "#F4DB7D"
                     });
 
                 }
@@ -349,7 +350,8 @@ namespace WpfApp1.ViewModels
                 {
                     msg = Connection.MessageRecieved.message,
                     sender = Connection.MessageRecieved.sender,
-                    date = " - [" + Connection.MessageRecieved.date + "]: "
+                    date = " - [" + Connection.MessageRecieved.date + "]: ",
+                    boxColor = "#9DAAF2"
                 });
             }
             if (e.PropertyName == "Disconnection")
@@ -450,7 +452,8 @@ namespace WpfApp1.ViewModels
     {
         public String msg { get; set; }
         public String sender { get; set; }
-        public String date { get; set; }  
+        public String date { get; set; }
+        public String boxColor { get; set; }
     }
     public class HistoryData
     {
