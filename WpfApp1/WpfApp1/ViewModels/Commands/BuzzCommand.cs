@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace WpfApp1.ViewModels.Commands
 {
-    internal class SendMessageCommand : ICommand
+    internal class BuzzCommand : ICommand
     {
         public event EventHandler? CanExecuteChanged;
         private MainViewModel _parent;
@@ -19,7 +19,7 @@ namespace WpfApp1.ViewModels.Commands
             set { _parent = value; }
         }
 
-        public SendMessageCommand(MainViewModel parent)
+        public BuzzCommand(MainViewModel parent)
         {
             this.Parent = parent;
         }
@@ -31,14 +31,8 @@ namespace WpfApp1.ViewModels.Commands
 
         public void Execute(object? parameter)
         {
-            Parent.sendMessage();
+            Parent.sendBuzz();
         }
     }
 }
-
-
-
-
-
-
 

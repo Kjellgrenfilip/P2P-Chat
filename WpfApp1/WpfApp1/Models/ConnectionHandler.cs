@@ -40,7 +40,7 @@ namespace WpfApp1.Models
         private bool connectionError = false;
         private bool connectionAccepted = false;
         private bool disconnection = false;
-        private RequestData incomingRequest;
+        private MessageData incomingRequest;
         private MessageData messageRecieved;
 
         public bool ConnectionError
@@ -52,7 +52,7 @@ namespace WpfApp1.Models
                 OnPropertyChanged();
             }
         }
-        public RequestData IncomingRequest
+        public MessageData IncomingRequest
         {
             get { return incomingRequest; }
             set
@@ -108,9 +108,18 @@ namespace WpfApp1.Models
             byte[] ip = new byte[4] { 127, 0, 0, 1 };
             
             IPAddress address = new IPAddress(ip);
-            IPEndPoint endPoint = new IPEndPoint(address, Int32.Parse(port));
+           
+            try 
+            {
+                IPEndPoint endPoint = new IPEndPoint(address, Int32.Parse(port));
+                sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("PORT number or IP not valid");
+            }
     
-            sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
+           
         }
 
         public void onRequestSent(IAsyncResult result)
@@ -128,14 +137,14 @@ namespace WpfApp1.Models
                 return;
             }
            
-            RequestData tmp1 = new RequestData
+            MessageData request = new MessageData
             {
-                username = myUserName,
-                port = myPort,
-                ip = "127.0.0.1"
+                type = MessageType.Request,
+                sender = myUserName,
+                message = "127.0.0.1" + ":" + myPort
             };
             
-            string jsonString = JsonConvert.SerializeObject(tmp1);
+            string jsonString = JsonConvert.SerializeObject(request);
             byte[] msg = Encoding.ASCII.GetBytes(jsonString);
             sendSocket.Send(msg);
 
@@ -185,11 +194,11 @@ namespace WpfApp1.Models
                 connectionSocket.Receive(buffer);
 
                 string jsonString = Encoding.ASCII.GetString(buffer);
-                RequestData? jsonObject = JsonConvert.DeserializeObject<RequestData>(jsonString);
-                int tmp_p = jsonObject.port;
+                MessageData? jsonObject = JsonConvert.DeserializeObject<MessageData>(jsonString);
+                int port = Int32.Parse(jsonObject.message.Substring(jsonObject.message.IndexOf(":")+1));
                 byte[] ip = new byte[4] { 127, 0, 0, 1 };
                 IPAddress address = new IPAddress(ip);
-                IPEndPoint endPoint = new IPEndPoint(address, tmp_p);
+                IPEndPoint endPoint = new IPEndPoint(address, port);
                 sendSocket.Connect(endPoint);
 
                 IncomingRequest = jsonObject;
@@ -200,8 +209,8 @@ namespace WpfApp1.Models
                 //Om vi är den som väntar på respons på requesten, går vi in här
                 connectionSocket.Receive(buffer);
                 string jsonString = Encoding.Default.GetString(buffer);
-                ResponseData? jsonObject = JsonConvert.DeserializeObject<ResponseData>(jsonString);
-                if (!jsonObject.accepted)
+                MessageData? jsonObject = JsonConvert.DeserializeObject<MessageData>(jsonString);
+                if (jsonObject.message == "denied")
                 {
                     ConnectionAccepted = false;
                     sendSocket.Shutdown(SocketShutdown.Both);
@@ -218,10 +227,13 @@ namespace WpfApp1.Models
 
         public void sendResponse(bool answer)
         {
-            string jsonString = JsonConvert.SerializeObject(new ResponseData
+            string jsonString = JsonConvert.SerializeObject(new MessageData
             {
-                accepted = answer
-            });
+                type = MessageType.Response,
+                sender = myUserName,
+                message = (answer)? "accepted" : "denied",
+                date = DateTime.Now.ToString("g")
+            }); 
             byte[] msg = Encoding.ASCII.GetBytes(jsonString);
             sendSocket.Send(msg);
             if(answer == false)
@@ -238,18 +250,36 @@ namespace WpfApp1.Models
            
         }
 
-        public void sendMessage(String msg)
+        public void sendMessage(String msg = null)
         {
             // Here is the code which sends the data over the network.
             // No user interaction shall exist in the model.
 
-            string jsonString = JsonConvert.SerializeObject(new MessageData
+            string jsonString;
+
+            if(msg != null)
             {
-                sender = myUserName,
-                message = msg,
-                date = DateTime.Now.ToString("g")
-            });
-           
+                jsonString = JsonConvert.SerializeObject(new MessageData
+                {
+                    type = MessageType.Message,
+                    sender = myUserName,
+                    message = msg,
+                    date = DateTime.Now.ToString("g")
+                });
+            }
+
+            else
+            {
+                jsonString = JsonConvert.SerializeObject(new MessageData
+                {
+                    type = MessageType.Buzz,
+                    sender = myUserName,
+                    message = "",
+                    date = DateTime.Now.ToString("g")
+                });
+            }
+
+
             byte[] buf = Encoding.ASCII.GetBytes(jsonString);
             sendSocket.Send(buf);
         }
@@ -294,29 +324,21 @@ namespace WpfApp1.Models
 
     }
 
-    public class RequestData
-    {
-        public string username;
-        public int port;
-        public string ip;
-    }
-    public class ResponseData
-    {
-        public bool accepted;
-    }
+   
+  
     public class MessageData
-    { 
+    {
+        public MessageType type;
         public string sender;
         public string message;
         public string date;
     }
-
-    enum MessageType
+   
+    public enum MessageType
     {
         Request,    //0
         Response,   //1
         Message,    //2
-        Disconnect  //3
+        Buzz        //3
     }
-
 }

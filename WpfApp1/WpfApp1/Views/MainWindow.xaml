@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="CHAT" Height="450" Width="800" >
+        Title="CHAT" Height="450" Width="800" Top="{Binding WindowY}"  Left="{Binding WindowX}">
     <Grid Height="auto" Margin="0" Background="MediumSeaGreen">
 
         <Grid.ColumnDefinitions>
@@ -68,6 +68,7 @@
         <!-- Höger grid, chattfönster-->
         <Grid Grid.Column="1" Grid.ColumnSpan="1" Grid.RowSpan="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -76,10 +77,11 @@
                 <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <TextBox Text="{Binding Path=MessageToSend}" Grid.Column="0" Grid.Row="1"></TextBox>
+            <TextBox Text="{Binding MessageToSend}" Grid.Column="0" Grid.Row="1"></TextBox>
             <Button  Command="{Binding PushCommand}" Grid.Column="1" Grid.Row="1">Send Message!</Button>
+            <Button  Command="{Binding BuzzCommand}" Grid.Column="3" Grid.Row="1">BUZZ</Button>
 
-            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.ColumnSpan="2">
+            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.ColumnSpan="3">
                 <ItemsControl ItemsSource="{Binding TestList}">
                 <ItemsControl.ItemTemplate> <!-- Gör en template för varje inkommande row/meddelande-->
                     <DataTemplate>
@@ -96,45 +98,48 @@
             </ScrollViewer>
 
         </Grid>
-        
+        <!-- Stort grid, visar historik ovanpå chatten-->
         <Grid Visibility="{Binding ShowHistory}" Background="Brown" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="8*"></RowDefinition>
-                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="16*"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
-            <Button Command="{Binding SearchCommand}"  Grid.Column="0"  Grid.Row="0" Margin="160,1,1,1" Background="White" >Search</Button>
-            <TextBox Text="{Binding Path=SearchTerm}" Grid.Column="0" Grid.Row="0" Margin="1,1,105,1"></TextBox>
-            <Button Command="{Binding HistoryCommand}"  Grid.Column="0"  Grid.Row="2" Margin="0" Background="White" >Go Back To Chat</Button>
-            
-            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1">
+            <Button Command="{Binding SearchCommand}"  Grid.Column="1"  Grid.Row="0" Background="White" >Search</Button>
+            <TextBox Text="{Binding Path=SearchTerm}" Grid.Column="0" Grid.Row="0" ></TextBox>
+            <Button Command="{Binding HistoryCommand}"  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="0" Background="White" >Go Back To Chat</Button>
+
+            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="1">
                 <ItemsControl ItemsSource="{Binding ConversationList}">
                     <ItemsControl.ItemTemplate>
                         <!-- Gör en template för varje inkommande row/meddelande-->
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <Border BorderBrush="Black">
+                            <StackPanel Orientation="Horizontal">
                                 <Button Command="{Binding command}" Content="{Binding name}" Padding="5" CommandParameter="{Binding name}"></Button>    
                             </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
             
-            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="1" Grid.ColumnSpan="1" Grid.RowSpan="3">
+            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="2" Grid.ColumnSpan="1" Grid.RowSpan="3">
                 <ItemsControl ItemsSource="{Binding HistoryConversation}">
                     <ItemsControl.ItemTemplate>
                         <!-- Gör en template för varje inkommande row/meddelande-->
                         <DataTemplate>
-                            <Border BorderBrush="Chartreuse" Margin="10" Padding="10" BorderThickness="2">
-                                <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="Black" Margin="2"  BorderThickness="1">
+                                <WrapPanel Orientation="Horizontal" Background="White" >
                                     <TextBlock Text="{Binding sender}"></TextBlock>
                                     <TextBlock Text="{Binding date}"></TextBlock>
-                                    <TextBlock Text="{Binding msg}"></TextBlock>
-                                </StackPanel>
+                                    <TextBlock Text="{Binding msg}" TextWrapping="Wrap"></TextBlock>
+                                </WrapPanel>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

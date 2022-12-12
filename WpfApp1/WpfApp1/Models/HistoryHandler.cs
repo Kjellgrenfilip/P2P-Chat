@@ -31,19 +31,20 @@ namespace WpfApp1.Models {
                     foreach (MessageTest msg in list)
                     {
                         string jsonString = JsonConvert.SerializeObject(msg);
-                        MessageBox.Show(jsonString);
+                        
                         sw.WriteLine(jsonString);
                     }
                 }
             }
             else
             {
+                path = mainPath + date.Replace(':', '.') + name +"(1)" + ".json";
                 using (StreamWriter sw = File.CreateText(path))
                 {
                     foreach (MessageTest msg in list)
                     {
                         string jsonString = JsonConvert.SerializeObject(msg);
-                        MessageBox.Show(jsonString);
+                       
                         sw.WriteLine(jsonString);
                     }
                 }
@@ -67,13 +68,20 @@ namespace WpfApp1.Models {
                 {
                     list.Add(f.Name);
                 }
-                return list;
+            }
+            else
+            {
+                var tmplist =
+                from file in fileList
+                orderby file.Name ascending
+                select file;
+
+                foreach (var f in tmplist)
+                {
+                    list.Add(f.Name);
+                }
             }
             
-            foreach (var f in fileList)
-            {
-                list.Add(f.Name);
-            }
             return list;
         }
         public List<MessageTest> getConversation(string filename)

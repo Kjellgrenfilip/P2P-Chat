@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 using System.Windows.Interop;
+using System.Media;
 
 namespace WpfApp1.ViewModels
 {
@@ -29,7 +30,7 @@ namespace WpfApp1.ViewModels
 
         private ConnectionHandler _connection;
         private HistoryHandler _historyHandler;
-        private String _messageToSend;
+        private String _messageToSend = "";
         private String _userName="";
         private String _listenPort="";
         private String _connectPort;
@@ -39,6 +40,8 @@ namespace WpfApp1.ViewModels
         private String _messageBoxColor = "Black";
         private String _showHistory = "Hidden";
         private String _searchTerm;
+        private String _windowX = "0";
+        private String _windowY = "0";
 
         private ICommand _connectCommand;
         private ICommand _disconnectCommand;
@@ -47,6 +50,7 @@ namespace WpfApp1.ViewModels
         private ICommand _historyCommand;
         private ICommand _searchCommand;
         private ICommand _showConversationCommand;
+        private ICommand _buzzCommand;
 
         private String _listenOK ="NOT LISTENING";
         private String _connectionStatus = "NOT CONNECTED";
@@ -88,7 +92,9 @@ namespace WpfApp1.ViewModels
         public String MessageToSend
         {
             get { return _messageToSend; }
-            set { _messageToSend = value; }
+            set { _messageToSend = value;
+                OnPropertyChanged();
+            }
         }
         public String SearchTerm
         {
@@ -169,6 +175,28 @@ namespace WpfApp1.ViewModels
             }
         }
 
+        public String WindowX
+        {
+            get { return _windowX; }
+            set
+            {
+                _windowX = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public String WindowY
+        {
+            get { return _windowY; }
+            set
+            {
+                _windowY = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
         public ICommand PushCommand
         {
             get { return _pushCommand; }
@@ -208,6 +236,12 @@ namespace WpfApp1.ViewModels
             set { _showConversationCommand = value; }
         }
 
+        public ICommand BuzzCommand
+        {
+            get { return _buzzCommand; }
+            set { _buzzCommand = value; }
+        }
+
         public MainViewModel(ConnectionHandler connectionHandler, HistoryHandler h)
         {
             this.Connection = connectionHandler;
@@ -220,34 +254,49 @@ namespace WpfApp1.ViewModels
             this.HistoryCommand = new HistoryCommand(this);
             this.SearchCommand = new SearchCommand(this);
             this.ShowConversationCommand = new ShowConversationCommand(this);
+            this.BuzzCommand = new BuzzCommand(this);
 
-            TestList.Add(new MessageTest()
-            {
-                msg = "FUCK",
-                sender = "FACK",
-                date = " - [" + DateTime.Now.ToString("g") + "]: "
-            });
 
 
         }
         public void sendMessage()
         {
-            if(Connection.ConnectionAccepted)
+            if (MessageToSend != "")
             {
-                Connection.sendMessage(MessageToSend);
-                MessageBoxColor = "Orange";
-                TestList.Add(new MessageTest()
+                if (Connection.ConnectionAccepted)
                 {
-                    msg = MessageToSend,
-                    sender = UserName,
-                    date = " - [" + DateTime.Now.ToString("g") + "]: "
-                });
+                    Connection.sendMessage(MessageToSend);
+                    MessageBoxColor = "Orange";
+                    TestList.Add(new MessageTest()
+                    {
+                        msg = MessageToSend,
+                        sender = UserName,
+                        date = " - [" + DateTime.Now.ToString("g") + "]: "
+                    });
+
+                }
+                else
+                {
+                    MessageBox.Show("Could not send message: Not connected to user.");
+                }
+                MessageToSend = "";
+            }
+        }
+        public void sendBuzz()
+        {
+
+           
+            if (Connection.ConnectionAccepted)
+            {
+                Connection.sendMessage();
             }
             else
             {
-                MessageBox.Show("Could not send message: Not connected to user.");
+                MessageBox.Show("Could not send BUZZ: Not connected to user.");
             }
-            
+
+
+
         }
         public void listen()
         {
@@ -283,9 +332,7 @@ namespace WpfApp1.ViewModels
         }
 
         public void Disconnect()
-        {
-            MessageBox.Show(DateTime.Now.ToString("s"));
-            HistoryHandler.AddHistory(TestList, UserName, DateTime.Now.ToString("s"));
+        {    
             if(Connection.Disconnect())
                 ConnectionStatus = "disconnecting";
         }
@@ -293,11 +340,11 @@ namespace WpfApp1.ViewModels
         {
             if (e.PropertyName == "MessageRecieved")
             { 
-                if(Connection.MessageRecieved.message == "Disconnect")
+                if(Connection.MessageRecieved.type == MessageType.Buzz)
                 {
-                    MessageBox.Show("DISCONNECT");
-                }
-                MessageBoxColor = "White";
+                    SystemSounds.Beep.Play();
+                    return;
+                }             
                 TestList.Add(new MessageTest()
                 {
                     msg = Connection.MessageRecieved.message,
@@ -309,6 +356,8 @@ namespace WpfApp1.ViewModels
             {
                 if(Connection.Disconnection)
                 {
+                    HistoryHandler.AddHistory(TestList, UserName, DateTime.Now.ToString("s"));
+                    TestList.Clear();
                     ConnectionStatus = "Disconnected";
                     ConnectionStatusColor = "Red";
                 }
@@ -331,7 +380,7 @@ namespace WpfApp1.ViewModels
             if (e.PropertyName == "IncomingRequest")
             {
                 //Fråga användaren om en connection
-                MessageBoxResult msgResult = MessageBox.Show(Connection.IncomingRequest.username + " want to chat with you!!", "Some Title", MessageBoxButton.YesNo);
+                MessageBoxResult msgResult = MessageBox.Show(Connection.IncomingRequest.sender + " want to chat with you!!", "Connection Request", MessageBoxButton.YesNo);
                 if (msgResult == MessageBoxResult.Yes)
                 {
                     Connection.sendResponse(true);

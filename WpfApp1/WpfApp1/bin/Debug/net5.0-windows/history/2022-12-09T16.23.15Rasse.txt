@@ -1,3 +1,0 @@
-{"msg":"FUCK","sender":"FACK","date":" - [2022-12-09 16:22]: "}
-{"msg":"Hej Kalle!","sender":"Rasse","date":" - [2022-12-09 16:23]: "}
-{"msg":"Tja Rasse!","sender":"Kalle","date":" - [2022-12-09 16:23]: "}
