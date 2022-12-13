@@ -106,7 +106,6 @@ namespace WpfApp1.Models
         public void requestConnection(String _ip, String port)
         {
             byte[] ip = new byte[4] { 127, 0, 0, 1 };
-            
             IPAddress address = new IPAddress(ip);
            
             try 
@@ -118,8 +117,6 @@ namespace WpfApp1.Models
             {
                 MessageBox.Show("PORT number or IP not valid");
             }
-    
-           
         }
 
         public void onRequestSent(IAsyncResult result)
@@ -146,7 +143,7 @@ namespace WpfApp1.Models
             
             string jsonString = JsonConvert.SerializeObject(request);
             byte[] msg = Encoding.ASCII.GetBytes(jsonString);
-            sendSocket.Send(msg);
+            sendSocket.BeginSend(msg, 0, msg.Length, 0, new AsyncCallback(onSent), sendSocket);
 
         }
 
@@ -174,9 +171,12 @@ namespace WpfApp1.Models
             return true;
         }
 
+        //Callback for accepting incoming connections
         public void onAccept(IAsyncResult result)
         {
+             
             byte[] buffer = new byte[1024];
+            //Try ending the asynchronous operation
             try
             {
                 connectionSocket = listeningSocket.EndAccept(result);
@@ -187,10 +187,10 @@ namespace WpfApp1.Models
             }
 
 
-            //Om vår sendSocket inte är ansluten: Ta emot portnummer och anslut
+            //If our sendSocket is not connected: Receive portnumber and connect back
             if(!sendSocket.Connected)
             {
-                //Den som får förfrågan kommer gå in i detta scope
+                //The client that receives the request will enter this scope
                 connectionSocket.Receive(buffer);
 
                 string jsonString = Encoding.ASCII.GetString(buffer);
@@ -200,18 +200,18 @@ namespace WpfApp1.Models
                 IPAddress address = new IPAddress(ip);
                 IPEndPoint endPoint = new IPEndPoint(address, port);
                 sendSocket.Connect(endPoint);
-
+                //Raise IncomingRequest event to view model
                 IncomingRequest = jsonObject;
-
             }
             else
             {
-                //Om vi är den som väntar på respons på requesten, går vi in här
+                //The client that initiated the request will enter this scope
                 connectionSocket.Receive(buffer);
                 string jsonString = Encoding.Default.GetString(buffer);
                 MessageData? jsonObject = JsonConvert.DeserializeObject<MessageData>(jsonString);
                 if (jsonObject.message == "denied")
                 {
+                    //Raise event to view model
                     ConnectionAccepted = false;
                     sendSocket.Shutdown(SocketShutdown.Both);
                     sendSocket.Close();
@@ -219,7 +219,7 @@ namespace WpfApp1.Models
                     listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
                     return;
                 }
-
+                //Raise event to view model
                 ConnectionAccepted = true;
 
             }
@@ -227,6 +227,7 @@ namespace WpfApp1.Models
 
         public void sendResponse(bool answer)
         {
+            //Pack message into a MessageData object and convert to json
             string jsonString = JsonConvert.SerializeObject(new MessageData
             {
                 type = MessageType.Response,
@@ -235,12 +236,16 @@ namespace WpfApp1.Models
                 date = DateTime.Now.ToString("g")
             }); 
             byte[] msg = Encoding.ASCII.GetBytes(jsonString);
-            sendSocket.Send(msg);
-            if(answer == false)
+            //Send message asynchronously and use callback below
+            sendSocket.BeginSend(msg, 0, msg.Length, 0, new AsyncCallback(onSent), sendSocket);
+            //If we chose to refuse the connection request
+            if (answer == false)
             {
+                //Cleanup and create new socket
                 sendSocket.Shutdown(SocketShutdown.Both);
                 sendSocket.Close();
-                sendSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream, ProtocolType.Tcp);
+                sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //Begin accepting new connections from queue
                 listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
             }
             else
@@ -250,20 +255,20 @@ namespace WpfApp1.Models
            
         }
 
-        public void sendMessage(String msg = null)
+        public void sendMessage(String message = null)
         {
             // Here is the code which sends the data over the network.
             // No user interaction shall exist in the model.
 
             string jsonString;
 
-            if(msg != null)
+            if(message != null)
             {
                 jsonString = JsonConvert.SerializeObject(new MessageData
                 {
                     type = MessageType.Message,
                     sender = myUserName,
-                    message = msg,
+                    message = message,
                     date = DateTime.Now.ToString("g")
                 });
             }
@@ -280,12 +285,29 @@ namespace WpfApp1.Models
             }
 
 
-            byte[] buf = Encoding.ASCII.GetBytes(jsonString);
-            sendSocket.Send(buf);
+            byte[] msg = Encoding.ASCII.GetBytes(jsonString);
+            //Send message asynchronously and use callback below
+            sendSocket.BeginSend(msg, 0, msg.Length, 0, new AsyncCallback(onSent), sendSocket);
+        }
+
+        public void onSent(IAsyncResult result)
+        {
+            //Nothing useful to do here
+            Socket tmp = (Socket)result.AsyncState;
+            try 
+            {
+                tmp.EndSend(result);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Could not send message");
+            }
+
         }
 
         public void receiveMessages()
         {
+            //Receive incoming message asynchronously and use the callback below
             connectionSocket.BeginReceive(messageBuffer, 0, 1024, 0, new AsyncCallback(onReceive), connectionSocket);
         }
 
@@ -293,19 +315,26 @@ namespace WpfApp1.Models
         {
             string jsonString = Encoding.ASCII.GetString(messageBuffer);
          
+            //Try to interpret messages as a MessageData object
             MessageData? jsonObject = JsonConvert.DeserializeObject<MessageData>(jsonString);
             if(jsonObject != null)
             {
+                //Raise messager eceived event to view model
                 MessageRecieved = jsonObject;
                 Array.Clear(messageBuffer, 0, messageBuffer.Length);
+                //Receive more messages
                 receiveMessages();
             }
+            //If interpreting failed we assume disconnection
             else if(sendSocket.Connected)
             {
+                //Cleanup and create new socket
                 sendSocket.Shutdown(SocketShutdown.Both);
                 sendSocket.Close();
                 sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //Raise disconnect event to view model
                 Disconnection = true;
+                //Begin accepting new connections from queue
                 listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);                  
             }
         }
@@ -313,10 +342,13 @@ namespace WpfApp1.Models
         {
             if (!sendSocket.Connected)
                 return false;
+            //Cleanup and create new socket
             sendSocket.Shutdown(SocketShutdown.Both);
             sendSocket.Close();
             sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //Raise disconnect event to view model
             Disconnection = true;
+            //Begin accepting new connections from queue
             listeningSocket.BeginAccept(new AsyncCallback(onAccept), listeningSocket);
             return true;
         }

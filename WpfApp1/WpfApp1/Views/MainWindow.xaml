@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="CHAT" Height="450" Width="800" Top="{Binding WindowY}"  Left="{Binding WindowX}">
+        Title="CHAT" Height="450" Width="800">
     <Grid Height="auto" Margin="0" Background="White">
 
         <Grid.ColumnDefinitions>
@@ -45,7 +45,7 @@
 
             <Button Command="{Binding Listen}" Grid.Column="0"  Grid.Row="2" Margin="10,40,10,80" >LISTEN</Button>
             <Border BorderBrush="{Binding ListeningStatusColor}" Margin="10" Grid.Row="2" Grid.Column="1" BorderThickness="5">
-                <TextBlock Text="{Binding ListenOK}" Background="AliceBlue"></TextBlock>
+                <TextBlock Text="{Binding ListenStatus}" Background="AliceBlue"></TextBlock>
             </Border>
             
             <!-- TROR INTE STATUSBAR ÄR RÄTT-->
@@ -84,7 +84,7 @@
             <Button  Command="{Binding BuzzCommand}" Grid.Column="3" Grid.Row="1">BUZZ</Button>
 
             <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Column="0" Grid.ColumnSpan="3">
-                <ItemsControl ItemsSource="{Binding TestList}">
+                <ItemsControl ItemsSource="{Binding MessageList}">
                 <ItemsControl.ItemTemplate> <!-- Gör en template för varje inkommande row/meddelande-->
                         <DataTemplate>
                             <Border BorderBrush="Black" Margin="2"  BorderThickness="1">
@@ -101,7 +101,7 @@
 
         </Grid>
         <!-- Stort grid, visar historik ovanpå chatten-->
-        <Grid Visibility="Hidden" Background="Brown" Grid.ColumnSpan="2">
+        <Grid Visibility="{Binding ShowHistory}" Background="Brown" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -122,7 +122,7 @@
                         <!-- Gör en template för varje inkommande row/meddelande-->
                         <DataTemplate>
                             <Border BorderBrush="Black">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
                                 <Button Command="{Binding command}" Content="{Binding name}" Padding="5" CommandParameter="{Binding name}"></Button>    
                             </StackPanel>
                             </Border>

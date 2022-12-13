@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5sje8M1YnTi9QeHeNtdeG9zLRMxuUvbvhpi8PQRCtxw2jwBoshzOq8WsdMjGyJem0lfJDqMxLtH1Pg+CykRcKw==",
+  "dgSpecHash": "nDHhC/Z71YvcqsA7p1g5FcX71uy5GnaA4V+MtUIgCgG9ivIMBy3iEvORw00fB83VKzXJVqJIJGxYJTtPr54NPA==",
   "success": true,
-  "projectFilePath": "D:\\Programmering\\UNI\\TDDD49\\projekt\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
+  "projectFilePath": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\kjell\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512"
+    "C:\\Users\\filkj254\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512"
   ],
   "logs": []
 }

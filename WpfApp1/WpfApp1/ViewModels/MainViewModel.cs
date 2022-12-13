@@ -19,9 +19,9 @@ namespace WpfApp1.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
        
-        public ObservableCollection<MessageTest> _testList = new ObservableCollection<MessageTest>();
+        public ObservableCollection<MessageContent> _messageList = new ObservableCollection<MessageContent>();
         public ObservableCollection<HistoryData> _conversationList = new ObservableCollection<HistoryData>();
-        public ObservableCollection<MessageTest> _historyConversation = new ObservableCollection<MessageTest>();
+        public ObservableCollection<MessageContent> _historyConversation = new ObservableCollection<MessageContent>();
 
         public void OnPropertyChanged([CallerMemberName()] string name = null)
         {
@@ -30,19 +30,19 @@ namespace WpfApp1.ViewModels
 
         private ConnectionHandler _connection;
         private HistoryHandler _historyHandler;
+        //variables for I/O
         private String _messageToSend = "";
         private String _userName="";
         private String _listenPort="";
         private String _connectPort;
         private String _connectIP;
+        private String _searchTerm;
+        //Variables for styling the interface
         private String _listeningStatusColor = "Red";
         private String _connectionStatusColor = "Red";
         private String _messageBoxColor = "Black";
         private String _showHistory = "Hidden";
-        private String _searchTerm;
-        private String _windowX = "0";
-        private String _windowY = "0";
-
+        //ButtonCommands
         private ICommand _connectCommand;
         private ICommand _disconnectCommand;
         private ICommand _pushCommand;
@@ -51,8 +51,8 @@ namespace WpfApp1.ViewModels
         private ICommand _searchCommand;
         private ICommand _showConversationCommand;
         private ICommand _buzzCommand;
-
-        private String _listenOK ="NOT LISTENING";
+        //Status messages
+        private String _listenStatus ="NOT LISTENING";
         private String _connectionStatus = "NOT CONNECTED";
 
         public ConnectionHandler Connection
@@ -63,7 +63,6 @@ namespace WpfApp1.ViewModels
                 _connection = value;
             }
         }
-
         public HistoryHandler HistoryHandler
         {
             get { return _historyHandler; }
@@ -73,10 +72,10 @@ namespace WpfApp1.ViewModels
             }
         }
 
-        public ObservableCollection<MessageTest> TestList
+        public ObservableCollection<MessageContent> MessageList
         { 
-            get { return _testList; }
-            set { _testList = value; } 
+            get { return _messageList; }
+            set { _messageList = value; } 
         }
 
         public ObservableCollection<HistoryData> ConversationList
@@ -84,7 +83,7 @@ namespace WpfApp1.ViewModels
             get { return _conversationList; }
             set { _conversationList = value; }
         }
-        public ObservableCollection<MessageTest> HistoryConversation
+        public ObservableCollection<MessageContent> HistoryConversation
         {
             get { return _historyConversation; }
             set { _historyConversation = value; }
@@ -157,11 +156,10 @@ namespace WpfApp1.ViewModels
             get { return _connectIP; }
             set { _connectIP = value; }
         }
-
-        public String ListenOK
+        public String ListenStatus
         {
-            get { return _listenOK; }
-            set { _listenOK = value;
+            get { return _listenStatus; }
+            set { _listenStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -174,28 +172,6 @@ namespace WpfApp1.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        public String WindowX
-        {
-            get { return _windowX; }
-            set
-            {
-                _windowX = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public String WindowY
-        {
-            get { return _windowY; }
-            set
-            {
-                _windowY = value;
-                OnPropertyChanged();
-            }
-        }
-
-
 
         public ICommand PushCommand
         {
@@ -255,9 +231,6 @@ namespace WpfApp1.ViewModels
             this.SearchCommand = new SearchCommand(this);
             this.ShowConversationCommand = new ShowConversationCommand(this);
             this.BuzzCommand = new BuzzCommand(this);
-
-
-
         }
         public void sendMessage()
         {
@@ -267,7 +240,7 @@ namespace WpfApp1.ViewModels
                 {
                     Connection.sendMessage(MessageToSend);
                     MessageBoxColor = "Orange";
-                    TestList.Add(new MessageTest()
+                    MessageList.Add(new MessageContent()
                     {
                         msg = MessageToSend,
                         sender = UserName,
@@ -284,9 +257,7 @@ namespace WpfApp1.ViewModels
             }
         }
         public void sendBuzz()
-        {
-
-           
+        {  
             if (Connection.ConnectionAccepted)
             {
                 Connection.sendMessage();
@@ -295,15 +266,12 @@ namespace WpfApp1.ViewModels
             {
                 MessageBox.Show("Could not send BUZZ: Not connected to user.");
             }
-
-
-
         }
         public void listen()
         {
-            ListenOK = "";
-            ListenOK = (UserName == "") ? "No name entered\n" : "";
-            ListenOK += (ListenPort == "") ? "No port entered" : "";
+            ListenStatus = "";
+            ListenStatus = (UserName == "") ? "No name entered\n" : "";
+            ListenStatus += (ListenPort == "") ? "No port entered" : "";
             
             if(Connection.ConnectionAccepted)
             {
@@ -316,12 +284,12 @@ namespace WpfApp1.ViewModels
                 
                 if ((Int32.Parse(ListenPort) > 0) && (Int32.Parse(ListenPort) < (65536)) && Connection.listen(ListenPort, UserName))
                 {
-                    ListenOK = "Listening on PORT: \n" + ListenPort;
+                    ListenStatus = "Listening on PORT: \n" + ListenPort;
                     ListeningStatusColor = "Green";
                 }
                 else
                 {
-                    ListenOK = "Invalid PORT";
+                    ListenStatus = "Invalid PORT";
                 }
             }
         }
@@ -346,7 +314,7 @@ namespace WpfApp1.ViewModels
                     SystemSounds.Beep.Play();
                     return;
                 }             
-                TestList.Add(new MessageTest()
+                MessageList.Add(new MessageContent()
                 {
                     msg = Connection.MessageRecieved.message,
                     sender = Connection.MessageRecieved.sender,
@@ -358,8 +326,8 @@ namespace WpfApp1.ViewModels
             {
                 if(Connection.Disconnection)
                 {
-                    HistoryHandler.AddHistory(TestList, UserName, DateTime.Now.ToString("s"));
-                    TestList.Clear();
+                    HistoryHandler.AddHistory(MessageList, UserName, DateTime.Now.ToString("s"));
+                    MessageList.Clear();
                     ConnectionStatus = "Disconnected";
                     ConnectionStatusColor = "Red";
                 }
@@ -439,8 +407,8 @@ namespace WpfApp1.ViewModels
         public void ShowConversation(string filename)
         {
             HistoryConversation.Clear();
-            List<MessageTest> list = HistoryHandler.getConversation(filename);
-            foreach (MessageTest msg in list)
+            List<MessageContent> list = HistoryHandler.getConversation(filename);
+            foreach (MessageContent msg in list)
             {
                 HistoryConversation.Add(msg);
             }
@@ -448,7 +416,7 @@ namespace WpfApp1.ViewModels
         }
     }
 
-    public class MessageTest
+    public class MessageContent
     {
         public String msg { get; set; }
         public String sender { get; set; }
