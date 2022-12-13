@@ -358,7 +358,7 @@ namespace WpfApp1.ViewModels
                 }
                 else
                 {
-                    Connection.sendResponse(false);
+                    Connection.sendResponse(false); 
                 }
             }
             if(e.PropertyName == "ConnectionError")

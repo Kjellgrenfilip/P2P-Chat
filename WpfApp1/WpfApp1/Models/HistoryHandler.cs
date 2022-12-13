@@ -66,7 +66,7 @@ namespace WpfApp1.Models {
                 var tmplist =
                 from file in fileList
                 where file.Name.Contains(searchTerm)
-                orderby file.Name ascending
+                orderby file.Name descending
                 select file;
                 
                 foreach (var f in tmplist)
@@ -80,7 +80,7 @@ namespace WpfApp1.Models {
                 //Selects all files and sorts them in ascending order based on date.
                 var tmplist =
                 from file in fileList
-                orderby file.Name ascending
+                orderby file.Name descending
                 select file;
 
                 foreach (var f in tmplist)
