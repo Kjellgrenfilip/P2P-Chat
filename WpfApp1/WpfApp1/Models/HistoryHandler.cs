@@ -62,7 +62,7 @@ namespace WpfApp1.Models {
             //If a searchterm is entered.
             if (searchTerm != null)
             {
-                //Selects all files containing the searchterm and sorts them in ascending order based on the date.
+                //Selects all files containing the searchterm and sorts them in descending order based on the date.
                 var tmplist =
                 from file in fileList
                 where file.Name.Contains(searchTerm)
@@ -77,7 +77,7 @@ namespace WpfApp1.Models {
             //If no searchterm is entered
             else
             {
-                //Selects all files and sorts them in ascending order based on date.
+                //Selects all files and sorts them in descending order based on date.
                 var tmplist =
                 from file in fileList
                 orderby file.Name descending

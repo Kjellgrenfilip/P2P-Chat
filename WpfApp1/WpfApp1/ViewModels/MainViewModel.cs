@@ -28,14 +28,29 @@ namespace WpfApp1.ViewModels
            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        public MainViewModel(ConnectionHandler connectionHandler, HistoryHandler h)
+        {
+            this.Connection = connectionHandler;
+            this.HistoryHandler = h;
+            Connection.PropertyChanged += EventFromModel;
+            this.SendCommand = new SendMessageCommand(this);
+            this.Listen = new StartListeningCommand(this);
+            this.ConnectCommand = new RequestConnectionCommand(this);
+            this.DisconnectCommand = new DisconnectCommand(this);
+            this.HistoryCommand = new HistoryCommand(this);
+            this.SearchCommand = new SearchCommand(this);
+            this.ShowConversationCommand = new ShowConversationCommand(this);
+            this.BuzzCommand = new BuzzCommand(this);
+        }
+
         private ConnectionHandler _connection;
         private HistoryHandler _historyHandler;
-        //variables for I/O
+        //variables for Input
         private String _messageToSend = "";
         private String _userName="";
         private String _listenPort="";
         private String _connectPort;
-        private String _connectIP;
+        private String _connectIP="";
         private String _searchTerm;
         //Variables for styling the interface
         private String _listeningStatusColor = "Red";
@@ -45,7 +60,7 @@ namespace WpfApp1.ViewModels
         //ButtonCommands
         private ICommand _connectCommand;
         private ICommand _disconnectCommand;
-        private ICommand _pushCommand;
+        private ICommand _sendCommand;
         private ICommand _listen;
         private ICommand _historyCommand;
         private ICommand _searchCommand;
@@ -173,10 +188,10 @@ namespace WpfApp1.ViewModels
             }
         }
 
-        public ICommand PushCommand
+        public ICommand SendCommand
         {
-            get { return _pushCommand; }
-            set { _pushCommand = value; }
+            get { return _sendCommand; }
+            set { _sendCommand = value; }
         }
         public ICommand Listen
         {
@@ -218,19 +233,37 @@ namespace WpfApp1.ViewModels
             set { _buzzCommand = value; }
         }
 
-        public MainViewModel(ConnectionHandler connectionHandler, HistoryHandler h)
+        public void listen()
         {
-            this.Connection = connectionHandler;
-            this.HistoryHandler = h;
-            Connection.PropertyChanged += EventFromModel;
-            this.PushCommand = new SendMessageCommand(this);
-            this.Listen = new StartListeningCommand(this);
-            this.ConnectCommand = new RequestConnectionCommand(this);
-            this.DisconnectCommand = new DisconnectCommand(this);
-            this.HistoryCommand = new HistoryCommand(this);
-            this.SearchCommand = new SearchCommand(this);
-            this.ShowConversationCommand = new ShowConversationCommand(this);
-            this.BuzzCommand = new BuzzCommand(this);
+            ListenStatus = "";
+            ListenStatus = (UserName == "") ? "No name entered\n" : "";
+            ListenStatus += (ListenPort == "") ? "No port entered" : "";
+
+            if (Connection.ConnectionAccepted)
+            {
+                MessageBox.Show("Please disconnect first");
+                return;
+            }
+
+            if (UserName != "" && ListenPort != "")
+            {
+
+                if ((Int32.Parse(ListenPort) > 0) && (Int32.Parse(ListenPort) < (65536)) && Connection.listen(ListenPort, UserName))
+                {
+                    ListenStatus = "Listening on PORT: \n" + ListenPort;
+                    ListeningStatusColor = "Green";
+                }
+                else
+                {
+                    ListenStatus = "Invalid PORT";
+                }
+            }
+        }
+
+        public void requestConnection()
+        {
+
+            Connection.requestConnection(ConnectIP, ConnectPort);
         }
         public void sendMessage()
         {
@@ -239,7 +272,6 @@ namespace WpfApp1.ViewModels
                 if (Connection.ConnectionAccepted)
                 {
                     Connection.sendMessage(MessageToSend);
-                    MessageBoxColor = "Orange";
                     MessageList.Add(new MessageContent()
                     {
                         msg = MessageToSend,
@@ -267,38 +299,7 @@ namespace WpfApp1.ViewModels
                 MessageBox.Show("Could not send BUZZ: Not connected to user.");
             }
         }
-        public void listen()
-        {
-            ListenStatus = "";
-            ListenStatus = (UserName == "") ? "No name entered\n" : "";
-            ListenStatus += (ListenPort == "") ? "No port entered" : "";
-            
-            if(Connection.ConnectionAccepted)
-            {
-                MessageBox.Show("Please disconnect first");
-                return;
-            }
-
-            if(UserName != "" && ListenPort != "")
-            {
-                
-                if ((Int32.Parse(ListenPort) > 0) && (Int32.Parse(ListenPort) < (65536)) && Connection.listen(ListenPort, UserName))
-                {
-                    ListenStatus = "Listening on PORT: \n" + ListenPort;
-                    ListeningStatusColor = "Green";
-                }
-                else
-                {
-                    ListenStatus = "Invalid PORT";
-                }
-            }
-        }
-
-        public void requestConnection()
-        {
-            ConnectionStatus = "sending";
-            Connection.requestConnection(ConnectIP, ConnectPort);
-        }
+        
 
         public void Disconnect()
         {    

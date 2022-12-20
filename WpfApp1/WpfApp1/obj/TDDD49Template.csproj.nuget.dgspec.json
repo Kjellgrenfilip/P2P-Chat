@@ -1,27 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj": {}
+    "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj": {}
   },
   "projects": {
-    "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj": {
+    "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
+        "projectUniqueName": "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
         "projectName": "TDDD49Template",
-        "projectPath": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
-        "packagesPath": "C:\\Users\\filkj254\\.nuget\\packages\\",
-        "outputPath": "X:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\obj\\",
+        "projectPath": "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\TDDD49Template.csproj",
+        "packagesPath": "C:\\Users\\lager\\.nuget\\packages\\",
+        "outputPath": "D:\\TDDD49\\tddd49projekt\\WpfApp1\\WpfApp1\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\filkj254\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\lager\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net5.0-windows7.0"
+          "net5.0-windows"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -54,7 +51,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -66,7 +64,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -13,6 +13,7 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.Net.WebSockets;
 
+
 namespace WpfApp1.Models
 {
     public class ConnectionHandler : INotifyPropertyChanged 
@@ -105,18 +106,24 @@ namespace WpfApp1.Models
 
         public void requestConnection(String _ip, String port)
         {
-            byte[] ip = new byte[4] { 127, 0, 0, 1 };
-            IPAddress address = new IPAddress(ip);
-           
+            if (_ip == "")
+                _ip = "127.0.0.1";
+
+            System.Net.IPAddress address;
+            IPEndPoint endPoint;
+
             try 
             {
-                IPEndPoint endPoint = new IPEndPoint(address, Int32.Parse(port));
-                sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
+                address = System.Net.IPAddress.Parse(_ip);
+                endPoint = new IPEndPoint(address, Int32.Parse(port));
+                
             }
             catch(Exception e)
             {
                 MessageBox.Show("PORT number or IP not valid");
+                return;
             }
+            sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
         }
 
         public void onRequestSent(IAsyncResult result)
