@@ -369,6 +369,10 @@ namespace WpfApp1.ViewModels
                     MessageBox.Show("Could not connect to the given port");
                 }
             }
+            if(e.PropertyName == "ExceptionMessage")
+            {
+                MessageBox.Show(Connection.ExceptionMessage);
+            }
         }
         public void ToggleHistory()
         {

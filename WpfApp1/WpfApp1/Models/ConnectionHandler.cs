@@ -43,7 +43,17 @@ namespace WpfApp1.Models
         private bool disconnection = false;
         private MessageData incomingRequest;
         private MessageData messageRecieved;
+        private String exception;
 
+        public String ExceptionMessage
+        {
+            get { return exception; }
+            set
+            {
+                exception = value;
+                OnPropertyChanged();
+            }
+        }
         public bool ConnectionError
         {
             get { return connectionError; }
@@ -120,7 +130,7 @@ namespace WpfApp1.Models
             }
             catch(Exception e)
             {
-                MessageBox.Show("PORT number or IP not valid");
+                ExceptionMessage = "PORT number or IP not valid";
                 return;
             }
             sendSocket.BeginConnect(endPoint, new AsyncCallback(onRequestSent), sendSocket);
@@ -136,7 +146,7 @@ namespace WpfApp1.Models
             catch(Exception e)
             {
                 //Kan säga att result är ogiltigt, kolla in ManualResetEvent
-                //MessageBox.Show(e.ToString());
+                
                 ConnectionError = true;
                 return;
             }
@@ -169,7 +179,7 @@ namespace WpfApp1.Models
             }
             catch(Exception e)
             {
-                MessageBox.Show(e.Message);
+                ExceptionMessage = e.Message;
                 return false;
             }
 
@@ -190,7 +200,7 @@ namespace WpfApp1.Models
             }
             catch(Exception e)
             {
-                MessageBox.Show(e.Message);
+                ExceptionMessage = e.Message;
             }
 
 
@@ -307,7 +317,7 @@ namespace WpfApp1.Models
             }
             catch(Exception e)
             {
-                MessageBox.Show("Could not send message");
+                ExceptionMessage = "Could not send message: " + e.Message;
             }
 
         }
